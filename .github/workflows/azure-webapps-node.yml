@@ -44,6 +44,7 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
+        package-lock: false
 
     - name: npm install, build, and test
       run: |
