@@ -17,4 +17,4 @@ jobs:
           context: .
           file: Dockerfile
           push: false
-          tags: panda-manager/backend:latest
+          tags: panda-manager-backend:latest
