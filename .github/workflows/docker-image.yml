@@ -27,4 +27,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: mayaraskin/panda-manager/backend:latest
+          tags: mayaraskin/panda-manager-backend:latest
