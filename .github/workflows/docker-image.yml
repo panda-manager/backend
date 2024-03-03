@@ -12,4 +12,10 @@ jobs:
 
     steps:
     - name: Build the Docker image
-      run: docker build . --tag panda-manager-backend:1.0.0
+      uses: docker/build-push-action@v4
+      with:
+          context: .
+          file: ./app/Dockerfile
+          # push: true
+          tags: panda-manager/backend:latest
+          outputs: type=docker,dest=/tmp/backend.tar
