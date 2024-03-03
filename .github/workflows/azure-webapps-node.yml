@@ -43,8 +43,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        package-lock: false
 
     - name: npm install, build, and test
       run: |
