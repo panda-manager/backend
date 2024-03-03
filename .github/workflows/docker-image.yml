@@ -15,7 +15,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
           context: .
-          file: ./Dockerfile
-          # push: true
+          file: Dockerfile
+          push: false
           tags: panda-manager/backend:latest
           outputs: type=docker,dest=/tmp/backend.tar
