@@ -18,4 +18,3 @@ jobs:
           file: Dockerfile
           push: false
           tags: panda-manager/backend:latest
-          outputs: type=docker,dest=/tmp/backend.tar
