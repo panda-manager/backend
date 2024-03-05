@@ -31,6 +31,10 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  DOCKERHUB_IMG_NAME: panda-manager-backend
+  AZURE_WEBAPP_NAME: backend-panda-manager
+  
 permissions:
   contents: read
 
