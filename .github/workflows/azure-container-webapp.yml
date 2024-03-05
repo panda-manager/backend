@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "main" ]
 
-# env:
-#   DOCKERHUB_IMG_NAME: panda-manager-backend
-#   AZURE_WEBAPP_NAME: backend-panda-manager
-#   DOCKERHUB_USERNAME: mayaraskin
+env:
+  DOCKERHUB_IMG_NAME: panda-manager-backend
+  AZURE_WEBAPP_NAME: backend-panda-manager
+  DOCKERHUB_USERNAME: mayaraskin
   
-# permissions:
-#   contents: read
+permissions:
+  contents: read
 
 jobs:
   build:
