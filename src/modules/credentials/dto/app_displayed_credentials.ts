@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class CredentialsDTO {
+export class AppDisplayedCredentialsDTO {
   @ApiProperty({ type: String, example: 'doesnt.matter.il' })
   @IsNotEmpty()
   readonly host: string;
