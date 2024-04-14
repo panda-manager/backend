@@ -7,5 +7,5 @@ export class CredentialsDTO {
   readonly host: string;
 
   @ApiProperty({ type: String, example: 'username' })
-  readonly username: string;
+  readonly login: string;
 }
