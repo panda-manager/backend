@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { uuidv4 } from '../../../utils/uuid';
+import { DeviceDTO } from '../dto/device.dto';
 
 @Entity()
 export class User {
@@ -25,9 +26,9 @@ export class User {
   @Column()
   master_password: string;
 
-  @ApiProperty({ type: [String], example: '[ "121.100.67.6" ]' })
+  @ApiProperty({ type: [DeviceDTO] })
   @Column()
-  devices: string[];
+  devices: DeviceDTO[];
 
   @ApiProperty({ type: Number, description: 'User creation UTC epoch' })
   @Column()
@@ -38,6 +39,7 @@ export class User {
       Object.assign(this, partial);
       this._id = this._id || uuidv4();
       this.created_at = this.created_at || +new Date();
+      //TODO: this.devices.push(ReqHost)
     }
   }
 }
