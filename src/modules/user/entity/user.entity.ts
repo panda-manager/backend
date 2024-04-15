@@ -39,7 +39,7 @@ export class User {
       Object.assign(this, partial);
       this._id = this._id || uuidv4();
       this.created_at = this.created_at || +new Date();
-      //TODO: this.devices.push(ReqHost)
+      //TODO: Implement on controller -> this.devices.push(ReqHost)
     }
   }
 }
