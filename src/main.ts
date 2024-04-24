@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { PORT } from './config/config';
+import { APP_PORT } from './environments';
+import { SetupSwagger } from './config/swagger';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
-  await app.listen(PORT);
+  SetupSwagger(app);
+  await app.listen(APP_PORT);
 };
 
-bootstrap().then(() => console.log(`Server is listening on port ${PORT}`));
+bootstrap().then(() => console.log(`Server is listening on port ${APP_PORT}`));
