@@ -19,6 +19,7 @@ export class UserService {
   async insert(req: Request, create_dto: CreateUserDTO) {
     return await this.usersRepository.save({
       ...create_dto,
+      devices: [req.hostname],
     });
   }
 }

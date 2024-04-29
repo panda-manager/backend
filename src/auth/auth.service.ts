@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { UserService } from '../modules/user/user.service';
+import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -36,5 +38,9 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async register(req: Request, register_dto: CreateUserDTO) {
+    return await this.usersService.insert(req, register_dto);
   }
 }

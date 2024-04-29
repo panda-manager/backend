@@ -42,24 +42,35 @@ export class CredentialsService {
   async update(
     req: Request,
     update_dto: UpdateCredentialsDTO,
-  ): Promise<UpdateResult> {
+  ): Promise<AppDisplayedCredentialsDTO> {
     const user = await this.authService.validateJwtAuth(
       req.header('Authorization'),
     );
 
-    return await this.credentialsRepository.update(
-      {
-        user_id: user._id,
-        host: update_dto.old_host,
-        login: update_dto.old_login,
-      },
-      {
+    const existingCredentials = await this.credentialsRepository.findOneBy({
+      user_id: user._id,
+      host: update_dto.old_host,
+      login: update_dto.old_login,
+    });
+
+    if (existingCredentials) {
+      Object.assign(existingCredentials, {
         login: update_dto.login,
         host: update_dto.host,
         password: update_dto.password,
         display_name: update_dto.display_name,
-      },
-    );
+      });
+
+      const { _id, display_name, host, login } =
+        await this.credentialsRepository.save(existingCredentials);
+
+      return {
+        _id,
+        display_name,
+        host,
+        login,
+      } as AppDisplayedCredentialsDTO;
+    }
   }
 
   async getAppDisplayedCredentials(
@@ -69,8 +80,8 @@ export class CredentialsService {
       req.header('Authorization'),
     );
 
-    const found: CredentialsEntity[] = await this.credentialsRepository.findBy({
-      user_id: user._id,
+    const found: CredentialsEntity[] = await this.credentialsRepository.find({
+      where: { user_id: user._id },
     });
 
     return found.map((item: CredentialsEntity) => {

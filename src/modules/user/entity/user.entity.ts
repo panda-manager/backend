@@ -31,9 +31,9 @@ export class UserEntity {
   @Column()
   master_password: string;
 
-  @ApiProperty({ type: [DeviceDTO] })
+  @ApiProperty({ type: [String] })
   @Column()
-  devices: DeviceDTO[];
+  devices: string[];
 
   @ApiProperty({ type: Number, description: 'User creation UTC epoch' })
   @CreateDateColumn()
