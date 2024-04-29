@@ -61,15 +61,15 @@ export class CredentialsService {
     );
   }
 
-  async findAll(req: Request): Promise<AppDisplayedCredentialsDTO[]> {
+  async getAppDisplayedCredentials(
+    req: Request,
+  ): Promise<AppDisplayedCredentialsDTO[]> {
     const user = await this.authService.validateJwtAuth(
       req.header('Authorization'),
     );
 
-    const found: CredentialsEntity[] = await this.credentialsRepository.find({
-      where: {
-        user_id: user._id,
-      },
+    const found: CredentialsEntity[] = await this.credentialsRepository.findBy({
+      user_id: user._id,
     });
 
     return found.map((item: CredentialsEntity) => {
@@ -82,5 +82,25 @@ export class CredentialsService {
         login,
       } as AppDisplayedCredentialsDTO;
     });
+  }
+
+  async getPassword(
+    req: Request,
+    host: string,
+    login: string,
+  ): Promise<string> {
+    const user = await this.authService.validateJwtAuth(
+      req.header('Authorization'),
+    );
+
+    const found: CredentialsEntity = await this.credentialsRepository.findOneBy(
+      {
+        user_id: user._id,
+        host: host,
+        login: login,
+      },
+    );
+
+    return found.password;
   }
 }

@@ -1,9 +1,9 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, Param,
   Post,
-  Put,
+  Put, Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -61,6 +61,21 @@ export class CredentialsController {
   })
   @Get()
   findAll(@Req() req: Request) {
-    return this.credentialsService.findAll(req);
+    return this.credentialsService.getAppDisplayedCredentials(req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    status: 200,
+    type: String,
+  })
+  @Get('password')
+  getPassword(
+    @Req() req: Request,
+    @Query('host') host: string,
+    @Query('login') login: string,
+  ) {
+    return this.credentialsService.getPassword(req, host, login);
   }
 }
