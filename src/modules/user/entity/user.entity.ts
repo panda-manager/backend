@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { DeviceDTO } from '../dto/device.dto';
 
 @Entity({ name: 'users' })
 export class UserEntity {

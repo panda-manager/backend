@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CredentialsEntity } from './entity/credentials.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from '../../auth/auth.service';
