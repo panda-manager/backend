@@ -4,7 +4,7 @@ import { Exclude } from 'class-transformer';
 import { uuidv4 } from '../../../utils/uuid';
 
 @Entity()
-export class Credentials {
+export class CredentialsEntity {
   @ApiProperty({ type: String, description: "Credentials' ObjectId" })
   @PrimaryGeneratedColumn()
   _id: string;
@@ -33,7 +33,7 @@ export class Credentials {
   @Column()
   created_at: number;
 
-  constructor(partial: Partial<Credentials>) {
+  constructor(partial: Partial<CredentialsEntity>) {
     if (partial) {
       Object.assign(this, partial);
       this._id = this._id || uuidv4();

@@ -5,7 +5,7 @@ import { uuidv4 } from '../../../utils/uuid';
 import { DeviceDTO } from '../dto/device.dto';
 
 @Entity()
-export class User {
+export class UserEntity {
   @ApiProperty({ description: "User's ObjectId" })
   @PrimaryGeneratedColumn()
   _id: string;
@@ -34,7 +34,7 @@ export class User {
   @Column()
   created_at: number;
 
-  constructor(partial: Partial<User>) {
+  constructor(partial: Partial<UserEntity>) {
     if (partial) {
       Object.assign(this, partial);
       this._id = this._id || uuidv4();
