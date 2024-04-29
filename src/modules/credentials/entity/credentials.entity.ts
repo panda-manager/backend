@@ -1,13 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ObjectId,
+  ObjectIdColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { uuidv4 } from '../../../utils/uuid';
 
-@Entity()
+@Entity({ name: 'credentials' })
 export class CredentialsEntity {
   @ApiProperty({ type: String, description: "Credentials' ObjectId" })
-  @PrimaryGeneratedColumn()
-  _id: string;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
   @Exclude()
   @Column()
@@ -29,15 +34,12 @@ export class CredentialsEntity {
   @Column()
   password: string;
 
-  @ApiProperty({ type: Number, description: 'User creation UTC epoch' })
-  @Column()
-  created_at: number;
+  @CreateDateColumn()
+  created_at: Date;
 
   constructor(partial: Partial<CredentialsEntity>) {
     if (partial) {
       Object.assign(this, partial);
-      this._id = this._id || uuidv4();
-      this.created_at = this.created_at || +new Date();
     }
   }
 }

@@ -1,14 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ObjectIdColumn,
+  ObjectId,
+  CreateDateColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { uuidv4 } from '../../../utils/uuid';
 import { DeviceDTO } from '../dto/device.dto';
 
-@Entity()
+@Entity({ name: 'users' })
 export class UserEntity {
   @ApiProperty({ description: "User's ObjectId" })
-  @PrimaryGeneratedColumn()
-  _id: string;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
   @ApiProperty({ type: String, example: 'John' })
   @Column()
@@ -31,14 +36,12 @@ export class UserEntity {
   devices: DeviceDTO[];
 
   @ApiProperty({ type: Number, description: 'User creation UTC epoch' })
-  @Column()
-  created_at: number;
+  @CreateDateColumn()
+  created_at: Date;
 
   constructor(partial: Partial<UserEntity>) {
     if (partial) {
       Object.assign(this, partial);
-      this._id = this._id || uuidv4();
-      this.created_at = this.created_at || +new Date();
       //TODO: Implement on controller -> this.devices.push(ReqHost)
     }
   }
