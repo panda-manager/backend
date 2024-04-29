@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
-import { LoginDTO } from './dto/login.dto';
+import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { UserService } from '../modules/user/user.service';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly usersService: UserService,
   ) {}
-  async validateBasicAuth(user: LoginDTO): Promise<UserEntity> {
+  async validateBasicAuth(user: BasicAuthLoginDTO): Promise<UserEntity> {
     const userRecord = await this.usersService.findOneBy({
       email: user.email,
     });

@@ -2,11 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ObjectId,
   ObjectIdColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { ObjectId } from 'mongodb';
 
 @Entity({ name: 'credentials' })
 export class CredentialsEntity {
@@ -16,7 +16,7 @@ export class CredentialsEntity {
 
   @Exclude()
   @Column()
-  user_id: string;
+  user_id: ObjectId;
 
   @ApiProperty({ type: String, example: 'Facebook' })
   @Column()
