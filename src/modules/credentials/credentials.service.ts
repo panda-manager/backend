@@ -50,11 +50,12 @@ export class CredentialsService {
     return await this.credentialsRepository.update(
       {
         user_id: user._id,
-        host: update_dto.host,
+        host: update_dto.old_host,
         login: update_dto.old_login,
       },
       {
         login: update_dto.login,
+        host: update_dto.host,
         password: update_dto.password,
         display_name: update_dto.display_name,
       },

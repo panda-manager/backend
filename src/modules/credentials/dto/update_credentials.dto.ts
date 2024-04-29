@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateCredentialsDTO {
   @ApiProperty({ type: String, example: 'doesnt.matter.il' })
+  readonly old_host: string;
+
+  @ApiProperty({ type: String, example: 'doesnt.matter.il' })
   readonly host: string;
 
   @ApiProperty({ type: String, example: 'Facebook' })

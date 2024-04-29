@@ -1,9 +1,10 @@
 import {
   Body,
   Controller,
-  Get, Param,
+  Get,
   Post,
-  Put, Query,
+  Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
