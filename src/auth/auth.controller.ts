@@ -7,7 +7,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('login')
   async login(@Body() login_dto: LoginDTO) {
-    const user = await this.authService.validateUser({ ...login_dto });
+    const user = await this.authService.validateBasicAuth({
+      ...login_dto,
+    });
 
     if (!user) throw new UnauthorizedException();
 

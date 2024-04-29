@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { LoginDTO } from './dto/login.dto';
 import { UserService } from '../modules/user/user.service';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class AuthService {
@@ -11,36 +10,29 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly usersService: UserService,
   ) {}
-  async validateUser(user: LoginDTO): Promise<UserEntity> {
+  async validateBasicAuth(user: LoginDTO): Promise<UserEntity> {
     const userRecord = await this.usersService.findOneBy({
       email: user.email,
     });
 
     if (!userRecord || user.master_password !== userRecord.master_password)
-      return null;
+      throw new UnauthorizedException();
 
     return userRecord;
   }
 
-  async identifyUserFromToken(payload: any): Promise<UserEntity | null> {
-    try {
-      const userId = payload.sub as string;
-      const user: UserEntity = await this.usersService.findOneBy({
-        _id: userId,
-      });
+  async validateJwtAuth(payload: any): Promise<UserEntity | null> {
+    const email = payload.sub as string;
+    const userRecord: UserEntity = await this.usersService.findOneBy({ email });
 
-      if (!user || (payload.exp as number) < Date.now())
-        throw new UnauthorizedException();
+    if (!userRecord) throw new UnauthorizedException();
 
-      return user;
-    } catch (error) {
-      console.log(error)
-      throw new UnauthorizedException();
-    }
+    return userRecord;
   }
 
   async login(user: UserEntity) {
-    const payload = { username: user.email, sub: user._id };
+    const payload = { sub: user.email };
+
     return {
       access_token: this.jwtService.sign(payload),
     };

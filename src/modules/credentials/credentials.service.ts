@@ -15,7 +15,7 @@ export class CredentialsService {
   ) {}
 
   async insert(req: Request, create_dto: CreateCredentialsDTO) {
-    const user = await this.authService.identifyUserFromToken(
+    const user = await this.authService.validateJwtAuth(
       req.header('Authorization'),
     );
 

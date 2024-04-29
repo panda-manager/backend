@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ACCESS_TOKEN_SECRET } from '../environments';
@@ -13,7 +13,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: ACCESS_TOKEN_SECRET!,
     });
   }
+
   async validate(payload: any) {
-    return payload.sub as string;
+    if (payload.exp < Date.now() / 1000) throw new UnauthorizedException();
+    return this.authService.validateJwtAuth(payload);
   }
 }

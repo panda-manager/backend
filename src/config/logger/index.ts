@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { LoggerService } from '@nestjs/common'
+import { LoggerService } from '@nestjs/common';
 
 export class BackendLogger implements LoggerService {
   log(message: string) {}
