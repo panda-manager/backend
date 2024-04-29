@@ -1,5 +1,13 @@
-import { Body, Controller, Post, Put, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ErrorResponseDTO } from 'modules/user/dto/error_response.dto';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -27,7 +35,6 @@ export class CredentialsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({
     status: 201,
-    description: 'The record has been successfully created.',
     type: AppDisplayedCredentialsDTO,
   })
   @Post()
@@ -39,11 +46,21 @@ export class CredentialsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({
     status: 200,
-    description: 'The record has been successfully updated.',
     type: AppDisplayedCredentialsDTO,
   })
   @Put()
   update(@Req() req: Request, @Body() update_dto: UpdateCredentialsDTO) {
     return this.credentialsService.update(req, update_dto);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    status: 200,
+    type: [AppDisplayedCredentialsDTO],
+  })
+  @Get()
+  findAll(@Req() req: Request) {
+    return this.credentialsService.findAll(req);
   }
 }

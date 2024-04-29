@@ -1,7 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { CredentialsEntity } from './entity/credentials.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from '../../auth/auth.service';
@@ -42,12 +42,12 @@ export class CredentialsService {
   async update(
     req: Request,
     update_dto: UpdateCredentialsDTO,
-  ): Promise<AppDisplayedCredentialsDTO> {
+  ): Promise<UpdateResult> {
     const user = await this.authService.validateJwtAuth(
       req.header('Authorization'),
     );
 
-    await this.credentialsRepository.update(
+    return await this.credentialsRepository.update(
       {
         user_id: user._id,
         host: update_dto.host,
@@ -59,12 +59,28 @@ export class CredentialsService {
         display_name: update_dto.display_name,
       },
     );
+  }
 
-    return {
-      _id: user._id,
-      host: update_dto.host,
-      display_name: update_dto.display_name,
-      login: update_dto.login,
-    };
+  async findAll(req: Request): Promise<AppDisplayedCredentialsDTO[]> {
+    const user = await this.authService.validateJwtAuth(
+      req.header('Authorization'),
+    );
+
+    const found: CredentialsEntity[] = await this.credentialsRepository.find({
+      where: {
+        user_id: user._id,
+      },
+    });
+
+    return found.map((item: CredentialsEntity) => {
+      const { _id, display_name, host, login } = item;
+
+      return {
+        _id,
+        display_name,
+        host,
+        login,
+      } as AppDisplayedCredentialsDTO;
+    });
   }
 }

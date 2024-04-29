@@ -1,9 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ObjectIdColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, ObjectIdColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { ObjectId } from 'mongodb';
