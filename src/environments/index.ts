@@ -1,22 +1,20 @@
-// App
+//#region App
 const APP_PORT = parseInt(process.env.PORT) || 8080;
 const APP_URL = process.env.APP_URL || `http://localhost:${APP_PORT}`;
 const NODE_ENV = process.env.NODE_ENV;
+//#endregion
 
-// DB
-const MONGO_URL = process.env.MONGO_URL as string;
+//#region DB
+const MONGO_USERNAME = process.env.MONGO_USERNAME;
+const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
+const MONGO_HOSTNAME = process.env.MONGO_HOSTNAME;
 const MONGO_PORT = parseInt(process.env.MONGO_PORT);
 const MONGO_DB = 'panda-manager';
+const MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`;
+//#endregion
 
-// AUTH
+//#region AUTH
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+//#endregion
 
-export {
-  ACCESS_TOKEN_SECRET,
-  NODE_ENV,
-  APP_URL,
-  APP_PORT,
-  MONGO_URL,
-  MONGO_PORT,
-  MONGO_DB,
-};
+export { ACCESS_TOKEN_SECRET, NODE_ENV, APP_URL, APP_PORT, MONGO_URL };

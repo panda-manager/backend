@@ -13,6 +13,10 @@ export class Credentials {
   @Column()
   user_id: string;
 
+  @ApiProperty({ type: String, example: 'Facebook' })
+  @Column()
+  display_name: string;
+
   @ApiProperty({ type: String, example: 'doesnt.matter.il' })
   @Column()
   host: string;
