@@ -1,7 +1,20 @@
 //#region App
+import { ImATeapotException } from '@nestjs/common';
+
 const APP_PORT = parseInt(process.env.PORT) || 8080;
 const APP_URL = process.env.APP_URL || `http://localhost:${APP_PORT}`;
 const NODE_ENV = process.env.NODE_ENV;
+
+const WHITE_LIST = ['http://localhost:4200'];
+const CORS_HANDLER = (origin, callback) => {
+  if (!origin) {
+    callback(null, true);
+    return;
+  }
+
+  if (WHITE_LIST.includes(origin)) callback(null, true);
+  else callback(new ImATeapotException('Not allowed by CORS'), false);
+};
 //#endregion
 
 //#region DB
@@ -26,4 +39,5 @@ export {
   MONGO_URL,
   MONGO_PORT,
   MONGO_DB,
+  CORS_HANDLER,
 };

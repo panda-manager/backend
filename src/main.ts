@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { APP_PORT, MONGO_URL } from './environments';
+import { APP_PORT, CORS_HANDLER } from './environments';
 import { SetupSwagger } from './config';
 import * as cookieParser from 'cookie-parser';
 
 const bootstrap = async () => {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: CORS_HANDLER,
+  });
   SetupSwagger(app);
   app.use(cookieParser());
   await app.listen(APP_PORT);
