@@ -41,7 +41,6 @@ export class UserEntity {
   constructor(partial: Partial<UserEntity>) {
     if (partial) {
       Object.assign(this, partial);
-      //TODO: Implement on controller -> this.devices.push(ReqHost)
     }
   }
 }
