@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
@@ -8,11 +8,14 @@ import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UserService,
   ) {}
   async validateBasicAuth(user: BasicAuthLoginDTO): Promise<UserEntity> {
+    this.logger.log(`Login attempted for user ${user.email}`);
+
     const userRecord = await this.usersService.findOneBy({
       email: user.email,
     });
