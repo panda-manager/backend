@@ -49,16 +49,15 @@ export class CredentialsService {
 
     const existingCredentials = await this.credentialsRepository.findOneBy({
       user_id: user._id,
-      host: update_dto.old_host,
-      login: update_dto.old_login,
+      host: update_dto.host,
+      login: update_dto.login,
     });
 
     if (existingCredentials) {
       Object.assign(existingCredentials, {
-        login: update_dto.login,
-        host: update_dto.host,
-        password: update_dto.password,
-        display_name: update_dto.display_name,
+        login: update_dto.new_login,
+        password: update_dto.new_password,
+        display_name: update_dto.new_display_name,
       });
 
       const { _id, display_name, host, login } =
