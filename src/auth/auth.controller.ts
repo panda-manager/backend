@@ -3,12 +3,18 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/commo
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { Request } from 'express';
+import { ApiOkResponse } from '@nestjs/swagger';
+import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Access token for future requests. Valid for 1h',
+    type: AccessTokenResponseDTO
+  })
   async login(@Body() login_dto: BasicAuthLoginDTO) {
     const user = await this.authService.validateBasicAuth({
       ...login_dto,

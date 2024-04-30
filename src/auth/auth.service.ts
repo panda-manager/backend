@@ -21,18 +21,17 @@ export class AuthService {
     });
 
     if (!userRecord || user.master_password !== userRecord.master_password)
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({}, { description: 'Username or password are incorrect!' });
 
     return userRecord;
   }
 
   async validateJwtAuth(payload: any): Promise<UserEntity | null> {
     const email = payload.sub as string;
-    const userRecord: UserEntity = await this.usersService.findOneBy({ email });
 
-    if (!userRecord) throw new UnauthorizedException();
+    //TODO: Validate jwt payload
 
-    return userRecord;
+    return await this.usersService.findOneBy({ email });
   }
 
   async login(user: UserEntity) {

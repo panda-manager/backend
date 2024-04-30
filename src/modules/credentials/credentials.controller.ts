@@ -8,7 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ErrorResponseDTO } from 'modules/user/dto/error_response.dto';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -34,7 +34,7 @@ export class CredentialsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({
+  @ApiOkResponse({
     status: 201,
     type: AppDisplayedCredentialsDTO,
   })
@@ -45,7 +45,7 @@ export class CredentialsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({
+  @ApiOkResponse({
     status: 200,
     type: AppDisplayedCredentialsDTO,
   })
@@ -56,7 +56,7 @@ export class CredentialsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({
+  @ApiOkResponse({
     status: 200,
     type: [AppDisplayedCredentialsDTO],
   })
@@ -67,7 +67,7 @@ export class CredentialsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({
+  @ApiOkResponse({
     status: 200,
     type: String,
   })
