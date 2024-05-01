@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
 import { Repository } from 'typeorm';
@@ -31,6 +31,7 @@ export class CredentialsService {
       `Create credentials for user ${user.email} is now attempted.`,
     );
 
+    // TODO: Add insert fail check
     const createdCredentials: CredentialsEntity =
       await this.credentialsRepository.save({
         ...create_dto,
@@ -67,7 +68,10 @@ export class CredentialsService {
       login: update_dto.login,
     });
 
-    if (existingCredentials) {
+    if (!existingCredentials)
+      throw new BadRequestException(`No such credentials for user ${user.email}`);
+
+    else {
       Object.assign(existingCredentials, {
         login: update_dto.new_login,
         password: update_dto.new_password,
@@ -144,8 +148,12 @@ export class CredentialsService {
       },
     );
 
-    this.logger.log(`Found credentials for user ${user.email}, host ${host}.`);
+    if (!found)
+      throw new BadRequestException(
+        `No such credentials for user ${user.email}`,
+      );
 
+    this.logger.log(`Found credentials for user ${user.email}, host ${host}.`);
     return found.password;
   }
 }

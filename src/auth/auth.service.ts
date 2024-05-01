@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
@@ -21,7 +26,7 @@ export class AuthService {
     });
 
     if (!userRecord || user.master_password !== userRecord.master_password)
-      throw new UnauthorizedException({}, { description: 'Username or password are incorrect!' });
+      throw new UnauthorizedException('Username or password are incorrect!');
 
     return userRecord;
   }
@@ -30,6 +35,8 @@ export class AuthService {
     const email = payload.sub as string;
 
     //TODO: Validate jwt payload
+
+    if (payload.exp < Date.now() / 1000) throw new UnauthorizedException();
 
     return await this.usersService.findOneBy({ email });
   }
@@ -43,6 +50,15 @@ export class AuthService {
   }
 
   async register(req: Request, register_dto: CreateUserDTO) {
+    const is_email_taken = await this.usersService.findOneBy({
+      email: register_dto.email,
+    });
+
+    if (is_email_taken)
+      throw new BadRequestException(
+        'The email address provided is already taken!',
+      );
+
     return await this.usersService.insert(req, register_dto);
   }
 }

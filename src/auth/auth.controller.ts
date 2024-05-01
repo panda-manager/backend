@@ -13,7 +13,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Access token for future requests. Valid for 1h',
-    type: AccessTokenResponseDTO
+    type: AccessTokenResponseDTO,
   })
   async login(@Body() login_dto: BasicAuthLoginDTO) {
     const user = await this.authService.validateBasicAuth({
