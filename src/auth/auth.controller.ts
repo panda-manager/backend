@@ -8,24 +8,24 @@ import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly auth_service: AuthService) {}
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Access token for future requests. Valid for 1h',
-    type: AccessTokenResponseDTO
+    type: AccessTokenResponseDTO,
   })
   async login(@Body() login_dto: BasicAuthLoginDTO) {
-    const user = await this.authService.validateBasicAuth({
+    const user = await this.auth_service.validate_basic_auth({
       ...login_dto,
     });
 
-    return this.authService.login(user);
+    return this.auth_service.login(user);
   }
 
   @Post('register')
   async register(@Req() req: Request, @Body() register_dto: CreateUserDTO) {
-    await this.authService.register(req, {
+    await this.auth_service.register(req, {
       ...register_dto,
     });
 

@@ -30,7 +30,7 @@ import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 @ApiTags('Credentials')
 @Controller('credentials')
 export class CredentialsController {
-  constructor(private readonly credentialsService: CredentialsService) {}
+  constructor(private readonly credentials_service: CredentialsService) {}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
@@ -40,7 +40,7 @@ export class CredentialsController {
   })
   @Post()
   insert(@Req() req: Request, @Body() create_dto: CreateCredentialsDTO) {
-    return this.credentialsService.insert(req, create_dto);
+    return this.credentials_service.insert(req, create_dto);
   }
 
   @ApiBearerAuth()
@@ -51,7 +51,7 @@ export class CredentialsController {
   })
   @Put()
   update(@Req() req: Request, @Body() update_dto: UpdateCredentialsDTO) {
-    return this.credentialsService.update(req, update_dto);
+    return this.credentials_service.update(req, update_dto);
   }
 
   @ApiBearerAuth()
@@ -61,8 +61,8 @@ export class CredentialsController {
     type: [AppDisplayedCredentialsDTO],
   })
   @Get()
-  findAll(@Req() req: Request) {
-    return this.credentialsService.getAppDisplayedCredentials(req);
+  get_all(@Req() req: Request) {
+    return this.credentials_service.get_app_displayed_credentials(req);
   }
 
   @ApiBearerAuth()
@@ -72,11 +72,11 @@ export class CredentialsController {
     type: String,
   })
   @Get('password')
-  getPassword(
+  get_password(
     @Req() req: Request,
     @Query('host') host: string,
     @Query('login') login: string,
   ) {
-    return this.credentialsService.getPassword(req, host, login);
+    return this.credentials_service.get_password(req, host, login);
   }
 }

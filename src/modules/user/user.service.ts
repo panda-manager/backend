@@ -9,15 +9,15 @@ import { CreateUserDTO } from './dto/create_user.dto';
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    private user_repository: Repository<UserEntity>,
   ) {}
 
   findOneBy(where: any) {
-    return this.usersRepository.findOneBy(where);
+    return this.user_repository.findOneBy(where);
   }
 
   async insert(req: Request, create_dto: CreateUserDTO) {
-    return await this.usersRepository.save({
+    return await this.user_repository.save({
       ...create_dto,
       devices: [req.hostname],
     });
