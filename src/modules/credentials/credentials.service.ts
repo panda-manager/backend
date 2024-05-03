@@ -31,8 +31,19 @@ export class CredentialsService {
       `Create credentials for user ${user.email} is now attempted.`,
     );
 
-    // TODO: Add insert fail check
-    const createdCredentials: CredentialsEntity =
+    const existing_credentials: CredentialsEntity =
+      await this.credentials_repository.findOneBy({
+        user_id: user._id,
+        host: create_dto.host,
+        login: create_dto.login,
+      });
+
+    if (existing_credentials)
+      throw new BadRequestException(
+        `Credentials for the provided host & login already exist for user ${user.email}. If this was intended, use update instead.`,
+      );
+
+    const created_credentials: CredentialsEntity =
       await this.credentials_repository.save({
         ...create_dto,
         user_id: user._id,
@@ -43,10 +54,10 @@ export class CredentialsService {
     );
 
     return {
-      _id: createdCredentials._id as ObjectId,
-      display_name: createdCredentials.display_name,
-      host: createdCredentials.host,
-      login: createdCredentials.login,
+      _id: created_credentials._id as ObjectId,
+      display_name: created_credentials.display_name,
+      host: created_credentials.host,
+      login: created_credentials.login,
     };
   }
 
@@ -146,8 +157,7 @@ export class CredentialsService {
         user_id: user._id,
         host: host,
         login: login,
-      },
-    );
+      });
 
     if (!found)
       throw new BadRequestException(
