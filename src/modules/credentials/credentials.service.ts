@@ -15,15 +15,15 @@ export class CredentialsService {
 
   constructor(
     @InjectRepository(CredentialsEntity)
-    private credentialsRepository: Repository<CredentialsEntity>,
-    private readonly authService: AuthService,
+    private credentials_repository: Repository<CredentialsEntity>,
+    private readonly auth_service: AuthService,
   ) {}
 
   async insert(
     req: Request,
     create_dto: CreateCredentialsDTO,
   ): Promise<AppDisplayedCredentialsDTO> {
-    const user = await this.authService.validateJwtAuth(
+    const user = await this.auth_service.validate_jwt(
       req.header('Authorization'),
     );
 
@@ -33,7 +33,7 @@ export class CredentialsService {
 
     // TODO: Add insert fail check
     const createdCredentials: CredentialsEntity =
-      await this.credentialsRepository.save({
+      await this.credentials_repository.save({
         ...create_dto,
         user_id: user._id,
       });
@@ -54,7 +54,7 @@ export class CredentialsService {
     req: Request,
     update_dto: UpdateCredentialsDTO,
   ): Promise<AppDisplayedCredentialsDTO> {
-    const user = await this.authService.validateJwtAuth(
+    const user = await this.auth_service.validate_jwt(
       req.header('Authorization'),
     );
 
@@ -62,17 +62,18 @@ export class CredentialsService {
       `Update credentials for user ${user.email} is now attempted.`,
     );
 
-    const existingCredentials = await this.credentialsRepository.findOneBy({
+    const existing_credentials = await this.credentials_repository.findOneBy({
       user_id: user._id,
       host: update_dto.host,
       login: update_dto.login,
     });
 
-    if (!existingCredentials)
-      throw new BadRequestException(`No such credentials for user ${user.email}`);
-
+    if (!existing_credentials)
+      throw new BadRequestException(
+        `No such credentials for user ${user.email}`,
+      );
     else {
-      Object.assign(existingCredentials, {
+      Object.assign(existing_credentials, {
         login: update_dto.new_login,
         password: update_dto.new_password,
         display_name: update_dto.new_display_name,
@@ -83,7 +84,7 @@ export class CredentialsService {
       );
 
       const { _id, display_name, host, login } =
-        await this.credentialsRepository.save(existingCredentials);
+        await this.credentials_repository.save(existing_credentials);
 
       this.logger.log(
         `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`,
@@ -98,16 +99,16 @@ export class CredentialsService {
     }
   }
 
-  async getAppDisplayedCredentials(
+  async get_app_displayed_credentials(
     req: Request,
   ): Promise<AppDisplayedCredentialsDTO[]> {
-    const user = await this.authService.validateJwtAuth(
+    const user = await this.auth_service.validate_jwt(
       req.header('Authorization'),
     );
 
     this.logger.debug(`Attempting to pull all user ${user.email} passwords.`);
 
-    const found: CredentialsEntity[] = await this.credentialsRepository.find({
+    const found: CredentialsEntity[] = await this.credentials_repository.find({
       where: { user_id: user._id },
     });
 
@@ -127,12 +128,12 @@ export class CredentialsService {
     });
   }
 
-  async getPassword(
+  async get_password(
     req: Request,
     host: string,
     login: string,
   ): Promise<string> {
-    const user = await this.authService.validateJwtAuth(
+    const user = await this.auth_service.validate_jwt(
       req.header('Authorization'),
     );
 
@@ -140,7 +141,7 @@ export class CredentialsService {
       `Attempting to pull password information for user ${user.email}, host ${host}`,
     );
 
-    const found: CredentialsEntity = await this.credentialsRepository.findOneBy(
+    const found: CredentialsEntity = await this.credentials_repository.findOneBy(
       {
         user_id: user._id,
         host: host,
