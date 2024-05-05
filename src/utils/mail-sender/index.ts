@@ -6,7 +6,7 @@ export default async (email: string, title: string, body: any) => {
     auth: {
       user: OTP_CONFIG.OTP_MAIL_USER,
       pass: OTP_CONFIG.OTP_MAIL_PASSWORD,
-    }
+    },
   });
   // Send emails to users
   const info = await transporter.sendMail({
@@ -15,6 +15,6 @@ export default async (email: string, title: string, body: any) => {
     subject: title,
     html: body,
   });
-  console.log("Email info: ", info);
+  console.log('Email info: ', info);
   return info;
 };
