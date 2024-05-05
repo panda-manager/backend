@@ -1,5 +1,12 @@
 import { AuthService } from './auth.service';
-import { Body, Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { Request } from 'express';
