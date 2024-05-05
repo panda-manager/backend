@@ -1,4 +1,4 @@
-import { NODE_ENV, MONGO_URL, MONGO_PORT, MONGO_DB } from 'environments';
+import { NODE_ENV, MONGO_URL } from 'environments';
 
 const orm = {
   development: {
@@ -8,11 +8,7 @@ const orm = {
     url: MONGO_URL!,
   },
   staging: {
-    host: 'localhost',
-    port: MONGO_PORT!,
-    username: '',
-    password: '',
-    database: MONGO_DB!,
+    url: MONGO_URL!,
   },
   production: {
     url: MONGO_URL!,
