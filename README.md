@@ -8,6 +8,12 @@ MONGO_PASSWORD=
 MONGO_HOSTNAME=localhost
 MONGO_PORT=27017
 ```
+
+Run the application using the command:
+```
+npm run start
+```
+
 To test the application locally, a MongoDB instance should be running on the default 27017 port on your machine with the credentials specified in the environment variables.
 
 You can do that using a docker-compose.yaml, for example:
