@@ -82,7 +82,7 @@ export class CredentialsController {
     status: HttpStatus.OK,
   })
   @Delete()
-  remove(@Req() req: Request, delete_dto: DeleteCredentialsDTO) {
+  remove(@Req() req: Request, @Body() delete_dto: DeleteCredentialsDTO) {
     return this.credentials_service.remove(req, delete_dto);
   }
 }
