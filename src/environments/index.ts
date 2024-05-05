@@ -1,12 +1,14 @@
-//#region App
 import { ImATeapotException } from '@nestjs/common';
 
+//#region APP
+const NODE_ENV = process.env.NODE_ENV;
 const APP_PORT = parseInt(process.env.PORT) || 8080;
 const APP_URL = process.env.APP_URL || `http://localhost:${APP_PORT}`;
-const NODE_ENV = process.env.NODE_ENV;
+//#endregion
 
+//#region CORS
 const WHITE_LIST = ['http://localhost:4200'];
-const CORS_HANDLER = (origin, callback) => {
+const CORS_HANDLER = (origin: string, callback: Function) => {
   if (!origin) {
     callback(null, true);
     return;
@@ -31,6 +33,16 @@ const ACCESS_TOKEN_SECRET =
   process.env.ACCESS_TOKEN_SECRET || 'your_secret_key';
 //#endregion
 
+//#region OTP
+const OTP_MAIL_HOST = process.env.OTP_MAIL_HOST
+const OTP_MAIL_USER = process.env.OTP_MAIL_USER
+const OTP_MAIL_PASSWORD = process.env.OTP_MAIL_PASSWORD
+const OTP_CONFIG = {
+  OTP_MAIL_HOST,
+  OTP_MAIL_USER,
+  OTP_MAIL_PASSWORD,
+};
+//#endregion
 export {
   ACCESS_TOKEN_SECRET,
   NODE_ENV,
@@ -40,4 +52,5 @@ export {
   MONGO_PORT,
   MONGO_DB,
   CORS_HANDLER,
+  OTP_CONFIG,
 };

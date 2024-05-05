@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { CreateUserDTO } from './dto/create_user.dto';
+import { UserStatus } from './enum/user_status';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
     return await this.user_repository.save({
       ...create_dto,
       devices: [req.hostname],
+      status: UserStatus.PENDING_VERIFICATION,
     });
   }
 }

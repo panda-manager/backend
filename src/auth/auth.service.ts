@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -8,8 +9,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../models/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { UserService } from '../models/user/user.service';
-import { CreateUserDTO } from '../models/user/dto/create_user.dto';
 import { Request } from 'express';
+import { UserStatus } from '../models/user/enum/user_status';
+import { CreateUserDTO } from '../models/user/dto/create_user.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,14 +35,20 @@ export class AuthService {
 
   async validate_jwt(payload: any): Promise<UserEntity | null> {
     const email = payload.sub as string;
+    const found = await this.user_service.findOneBy({ email });
 
-    if (payload.exp && payload.exp < Date.now() / 1000)
+    if ((payload.exp && payload.exp < Date.now() / 1000) || !found)
       throw new UnauthorizedException();
 
-    return await this.user_service.findOneBy({ email });
+    if (found.status == UserStatus.PENDING_VERIFICATION)
+      throw new ForbiddenException('Account is pending OTP verification!');
+
+    return found;
   }
 
-  async login(user: UserEntity) {
+  async generate_jwt(user: UserEntity) {
+    if (!user) throw new UnauthorizedException();
+
     return {
       access_token: this.jwt_service.sign({ sub: user.email }),
     };

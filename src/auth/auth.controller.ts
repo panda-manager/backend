@@ -27,7 +27,7 @@ export class AuthController {
       ...login_dto,
     });
 
-    return this.auth_service.login(user);
+    return this.auth_service.generate_jwt(user);
   }
 
   @Post('register')
