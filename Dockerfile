@@ -1,5 +1,5 @@
 # Base image
-FROM node:18
+FROM node:20
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -9,13 +9,14 @@ COPY package*.json ./
 
 # Install app dependencies
 RUN npm i -g pnpm
+RUN pnpm add -g pnpm
 RUN pnpm i
 
 # Bundle app source
 COPY . .
 
 # Creates a "dist" folder with the production build
-RUN npm run build
+RUN pnpm run build
 
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
