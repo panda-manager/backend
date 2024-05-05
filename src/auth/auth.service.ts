@@ -5,10 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from '../modules/user/entity/user.entity';
+import { UserEntity } from '../models/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
-import { UserService } from '../modules/user/user.service';
-import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
+import { UserService } from '../models/user/user.service';
+import { CreateUserDTO } from '../models/user/dto/create_user.dto';
 import { Request } from 'express';
 
 @Injectable()
