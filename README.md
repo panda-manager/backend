@@ -46,7 +46,7 @@ Run the application using the command:
 npm run start
 ```
 
-## Run as docker image
+### Run as docker image
 You can use the docker-compose.yaml included here and just run:
 ```
 docker-compose build
