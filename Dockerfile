@@ -9,7 +9,6 @@ COPY package*.json ./
 
 # Install app dependencies
 RUN npm i -g pnpm
-RUN pnpm add -g pnpm
 RUN pnpm i
 
 # Bundle app source
