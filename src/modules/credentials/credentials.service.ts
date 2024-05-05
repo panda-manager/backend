@@ -24,9 +24,7 @@ export class CredentialsService {
     req: Request,
     create_dto: CreateCredentialsDTO,
   ): Promise<AppDisplayedCredentialsDTO> {
-    const user = await this.auth_service.validate_jwt(
-      req.header('Authorization'),
-    );
+    const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
       `Create credentials for user ${user.email} is now attempted.`,
@@ -66,9 +64,7 @@ export class CredentialsService {
     req: Request,
     update_dto: UpdateCredentialsDTO,
   ): Promise<AppDisplayedCredentialsDTO> {
-    const user = await this.auth_service.validate_jwt(
-      req.header('Authorization'),
-    );
+    const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
       `Update credentials for user ${user.email} is now attempted.`,
@@ -114,9 +110,7 @@ export class CredentialsService {
   async get_app_displayed_credentials(
     req: Request,
   ): Promise<AppDisplayedCredentialsDTO[]> {
-    const user = await this.auth_service.validate_jwt(
-      req.header('Authorization'),
-    );
+    const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(`Attempting to pull all user ${user.email} passwords.`);
 
@@ -145,9 +139,7 @@ export class CredentialsService {
     host: string,
     login: string,
   ): Promise<string> {
-    const user = await this.auth_service.validate_jwt(
-      req.header('Authorization'),
-    );
+    const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
       `Attempting to pull password information for user ${user.email}, host ${host}`,
@@ -170,9 +162,7 @@ export class CredentialsService {
   }
 
   async remove(req: Request, delete_dto: DeleteCredentialsDTO): Promise<void> {
-    const user = await this.auth_service.validate_jwt(
-      req.header('Authorization'),
-    );
+    const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
       `Deleting password for user ${user.email}, host ${delete_dto.host}`,
