@@ -1,14 +1,21 @@
 import {
   Body,
-  Controller, Delete,
-  Get, HttpStatus,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
   Post,
   Put,
   Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ErrorResponseDTO } from 'modules/user/dto/error_response.dto';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
