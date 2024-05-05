@@ -4,7 +4,7 @@ import { APP_PORT, CORS_HANDLER, NODE_ENV } from './environments';
 import { SetupSwagger } from './config';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 const bootstrap = async () => {
   const additional_config =
@@ -15,6 +15,7 @@ const bootstrap = async () => {
   SetupSwagger(app);
   app.use(morgan('dev'));
   app.use(cookieParser());
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(APP_PORT);
 };

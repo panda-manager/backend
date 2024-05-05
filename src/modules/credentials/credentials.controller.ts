@@ -16,7 +16,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ErrorResponseDTO } from 'modules/user/dto/error_response.dto';
+import { ErrorResponseDTO } from 'common/error_response.dto';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
