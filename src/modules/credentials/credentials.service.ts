@@ -8,6 +8,7 @@ import { AuthService } from '../../auth/auth.service';
 import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
 import { ObjectId } from 'mongodb';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
+import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 
 @Injectable()
 export class CredentialsService {
@@ -152,8 +153,8 @@ export class CredentialsService {
       `Attempting to pull password information for user ${user.email}, host ${host}`,
     );
 
-    const found: CredentialsEntity = await this.credentials_repository.findOneBy(
-      {
+    const found: CredentialsEntity =
+      await this.credentials_repository.findOneBy({
         user_id: user._id,
         host: host,
         login: login,
@@ -166,5 +167,32 @@ export class CredentialsService {
 
     this.logger.log(`Found credentials for user ${user.email}, host ${host}.`);
     return found.password;
+  }
+
+  async remove(req: Request, delete_dto: DeleteCredentialsDTO): Promise<void> {
+    const user = await this.auth_service.validate_jwt(
+      req.header('Authorization'),
+    );
+
+    this.logger.debug(
+      `Deleting password for user ${user.email}, host ${delete_dto.host}`,
+    );
+
+    const found: CredentialsEntity =
+      await this.credentials_repository.findOneBy({
+        user_id: user._id,
+        host: delete_dto.host,
+        login: delete_dto.login,
+      });
+
+    if (!found)
+      throw new BadRequestException(
+        `No such credentials for user ${user.email}`,
+      );
+
+    await this.credentials_repository.remove(found);
+    this.logger.debug(
+      `Credentials for host ${delete_dto.host} deleted for user ${user.email}`,
+    );
   }
 }

@@ -34,7 +34,7 @@ export class AuthService {
   async validate_jwt(payload: any): Promise<UserEntity | null> {
     const email = payload.sub as string;
 
-    if (payload.exp < Date.now() / 1000) throw new UnauthorizedException();
+    if (payload.exp && payload.exp < Date.now() / 1000) throw new UnauthorizedException();
 
     return await this.user_service.findOneBy({ email });
   }

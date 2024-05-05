@@ -1,7 +1,7 @@
 import {
   Body,
-  Controller,
-  Get,
+  Controller, Delete,
+  Get, HttpStatus,
   Post,
   Put,
   Query,
@@ -16,15 +16,11 @@ import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
 import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
+import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 
 @ApiResponse({
-  status: 401,
+  status: HttpStatus.UNAUTHORIZED,
   description: 'Unauthorized',
-  type: ErrorResponseDTO,
-})
-@ApiResponse({
-  status: 403,
-  description: 'Forbidden',
   type: ErrorResponseDTO,
 })
 @ApiTags('Credentials')
@@ -35,7 +31,7 @@ export class CredentialsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     type: AppDisplayedCredentialsDTO,
   })
   @Post()
@@ -46,7 +42,7 @@ export class CredentialsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
-    status: 200,
+    status: HttpStatus.OK,
     type: AppDisplayedCredentialsDTO,
   })
   @Put()
@@ -57,7 +53,7 @@ export class CredentialsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
-    status: 200,
+    status: HttpStatus.OK,
     type: [AppDisplayedCredentialsDTO],
   })
   @Get()
@@ -68,7 +64,7 @@ export class CredentialsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
-    status: 200,
+    status: HttpStatus.OK,
     type: String,
   })
   @Get('password')
@@ -78,5 +74,15 @@ export class CredentialsController {
     @Query('login') login: string,
   ) {
     return this.credentials_service.get_password(req, host, login);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+  })
+  @Delete()
+  remove(@Req() req: Request, delete_dto: DeleteCredentialsDTO) {
+    return this.credentials_service.remove(req, delete_dto);
   }
 }
