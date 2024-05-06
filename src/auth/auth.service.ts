@@ -52,7 +52,7 @@ export class AuthService {
   }
 
   async validate_jwt(payload: any): Promise<UserEntity | null> {
-    const { exp, email }: { exp: number; email: string } = payload;
+    const { exp, sub: email } = payload;
 
     const found = await this.user_service.findOneBy({ email });
 

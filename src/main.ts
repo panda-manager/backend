@@ -1,17 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { CORS_HANDLER } from './environments';
 import { SetupSwagger } from './config';
 import * as morgan from 'morgan';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { configDotenv } from 'dotenv';
 import { expand as expandDotenv } from 'dotenv-expand';
+import nestConfig from '../nest.config';
 
 const env = configDotenv();
 expandDotenv(env);
 
 const bootstrap = async () => {
-  const app = await NestFactory.create(AppModule, { cors: CORS_HANDLER });
+  const app = await NestFactory.create(AppModule, nestConfig);
 
   SetupSwagger(app);
   app.use(morgan('dev'));

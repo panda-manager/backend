@@ -9,6 +9,7 @@ import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
 import { ObjectId } from 'mongodb';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
+import { GetPasswordDTO } from './dto/get_password.dto';
 
 @Injectable()
 export class CredentialsService {
@@ -136,20 +137,19 @@ export class CredentialsService {
 
   async get_password(
     req: Request,
-    host: string,
-    login: string,
+    get_password_dto: GetPasswordDTO,
   ): Promise<string> {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
-      `Attempting to pull password information for user ${user.email}, host ${host}`,
+      `Attempting to pull password information for user ${user.email}, host ${get_password_dto.host}`,
     );
 
     const found: CredentialsEntity =
       await this.credentials_repository.findOneBy({
         user_id: user._id,
-        host: host,
-        login: login,
+        host: get_password_dto.host,
+        login: get_password_dto.login,
       });
 
     if (!found)
@@ -157,7 +157,9 @@ export class CredentialsService {
         `No such credentials for user ${user.email}`,
       );
 
-    this.logger.log(`Found credentials for user ${user.email}, host ${host}.`);
+    this.logger.log(
+      `Found credentials for user ${user.email}, host ${get_password_dto.host}.`,
+    );
     return found.password;
   }
 

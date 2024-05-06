@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Post,
   Put,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +17,7 @@ import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
+import { GetPasswordDTO } from './dto/get_password.dto';
 
 @ApiTags('Credentials')
 @Controller('credentials')
@@ -63,13 +63,9 @@ export class CredentialsController {
     status: HttpStatus.OK,
     type: String,
   })
-  @Get('password')
-  get_password(
-    @Req() req: Request,
-    @Query('host') host: string,
-    @Query('login') login: string,
-  ) {
-    return this.credentials_service.get_password(req, host, login);
+  @Post('password')
+  get_password(@Req() req: Request, @Body() get_password_dto: GetPasswordDTO) {
+    return this.credentials_service.get_password(req, get_password_dto);
   }
 
   @ApiBearerAuth()
