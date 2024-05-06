@@ -1,8 +1,9 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Put, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Req } from '@nestjs/common';
 import { OTPVerifyDTO } from './dto/otp_verify.dto';
 import { OTPService } from './otp.service';
 import { Request } from 'express';
+import { OTPSendDTO } from './dto/otp_send.dto';
 
 @ApiTags('OTP')
 @Controller('otp')
@@ -14,8 +15,8 @@ export class OTPController {
     return this.otp_service.verify_otp(otp_verify_dto);
   }
 
-  @Get()
-  send_otp(@Req() req: Request, @Query('email') email: string) {
-    return this.otp_service.send_otp(req, email);
+  @Post()
+  send_otp(@Req() req: Request, @Body() otp_send_dto: OTPSendDTO) {
+    return this.otp_service.send_otp(req, otp_send_dto.email);
   }
 }

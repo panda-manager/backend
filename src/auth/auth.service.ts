@@ -45,7 +45,7 @@ export class AuthService {
     )
       throw new ForbiddenException(
         'Requested device is not a trusted device. ' +
-          'Use a GET /otp?email=account.email.com request from this device to get an OTP, and verify it using a PUT /otp/verify (from whatever device)',
+          'POST Request to /otp from this device to get an OTP with your email, and verify it using a PUT /otp/verify (from whatever device)',
       );
 
     return user_record;
@@ -88,8 +88,8 @@ export class AuthService {
 
     return {
       message:
-        'Account created. An OTP was sent to the provided email address. Make a PUT request to /otp/verify with the provided code.' +
-        'To generate a new one, make a GET request to /otp with a query parameter named email with the registered email address',
+        'Account created. An OTP was sent to the provided email address. ' +
+        'To verify the device you have registered from, make a PUT request to /otp/verify with the code provided in your email.',
     };
   }
 
