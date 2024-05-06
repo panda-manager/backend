@@ -13,6 +13,7 @@ import { generate as generateOtp } from 'otp-generator';
 import mailSender from '../utils/mail-sender';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 @Injectable()
 export class OTPService {
   constructor(
@@ -42,14 +43,12 @@ export class OTPService {
         `No such OTP found for user ${otp_verify_dto.email}`,
       );
 
-    // TODO: Add TTL to document to delete this
-    if (Date.now() - found_otp.created_at.getTime() > 300000)
-      throw new ForbiddenException(
-        'OTP has expired. Please generate a new one',
-      );
-
+    const result = await this.user_service.set_device_as_verified(
+      user,
+      found_otp.device,
+    );
     await this.otp_repository.remove(found_otp);
-    return await this.user_service.update_user_verified(user);
+    return result;
   }
 
   async send_verification_email(email: string, otp: string) {
@@ -83,7 +82,7 @@ export class OTPService {
     Logger.debug(`OTP sent to ${email}`);
   }
 
-  async send_otp(email: string) {
+  async send_otp(req: Request, email: string) {
     const user = await this.user_service.findOneBy({
       email,
     });
@@ -102,6 +101,7 @@ export class OTPService {
     const otp_payload = {
       user_id: user._id,
       otp,
+      device: req.hostname,
     };
 
     await this.otp_repository.save(otp_payload);

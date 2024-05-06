@@ -6,7 +6,7 @@ export class DeviceDTO {
   @ApiProperty({ type: String, description: 'IP(/MAC?)' })
   readonly identifier: string;
 
-  @ApiProperty({ type: Number, description: 'Pending verification/verified'})
+  @ApiProperty({ type: Number, description: 'Pending verification/verified' })
   @Column({
     type: 'enum',
     enum: UserStatus,

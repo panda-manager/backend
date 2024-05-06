@@ -24,6 +24,13 @@ export class OTPEntity {
   @Column()
   readonly otp: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'The device that requested the OTP',
+  })
+  @Column()
+  readonly device: string;
+
   @ApiProperty({ type: Date, description: 'Created at' })
   @Index('created_at', { expireAfterSeconds: 300 })
   @CreateDateColumn()

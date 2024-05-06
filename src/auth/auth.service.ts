@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
@@ -22,7 +16,10 @@ export class AuthService {
     private readonly user_service: UserService,
     private readonly otp_service: OTPService,
   ) {}
-  async validate_basic_auth(user: BasicAuthLoginDTO): Promise<UserEntity> {
+  async validate_basic_auth(
+    req: Request,
+    user: BasicAuthLoginDTO,
+  ): Promise<UserEntity> {
     this.logger.log(`Login attempted for user ${user.email}`);
 
     const user_record = await this.user_service.findOneBy({
@@ -32,27 +29,41 @@ export class AuthService {
     if (!user_record || user.master_password !== user_record.master_password)
       throw new UnauthorizedException('Username or password are incorrect!');
 
+    const request_device = user_record.devices.find(
+      (item) => item.identifier == req.hostname,
+    );
+
+    if (
+      !request_device ||
+      request_device.status == UserStatus.PENDING_VERIFICATION
+    )
+      throw new ForbiddenException(
+        'Requested device is not a trusted device. ' +
+          'Use a GET /otp?email=account.email.com request from this device to get an OTP, and verify it using a PUT /otp/verify (from whatever device)',
+      );
+
     return user_record;
   }
 
   async validate_jwt(payload: any): Promise<UserEntity | null> {
-    const email = payload.sub as string;
+    const { exp, email } : { exp: number, email: string } = payload;
+
     const found = await this.user_service.findOneBy({ email });
 
-    if ((payload.exp && payload.exp < Date.now() / 1000) || !found)
+    if (!found || (exp && exp < Date.now() / 1000))
       throw new UnauthorizedException();
-
-    if (found.status == UserStatus.PENDING_VERIFICATION)
-      throw new ForbiddenException('Account is pending OTP verification!');
 
     return found;
   }
 
-  async generate_jwt(user: UserEntity) {
+  async generate_jwt(req: Request, user: UserEntity) {
     if (!user) throw new UnauthorizedException();
 
     return {
-      access_token: this.jwt_service.sign({ sub: user.email }),
+      access_token: this.jwt_service.sign({
+        sub: user.email,
+        device: req.hostname,
+      }),
     };
   }
 
@@ -67,7 +78,7 @@ export class AuthService {
       );
 
     await this.user_service.insert(req, register_dto);
-    await this.otp_service.send_otp(register_dto.email);
+    await this.otp_service.send_otp(req, register_dto.email);
 
     return {
       message:

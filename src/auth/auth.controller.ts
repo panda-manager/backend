@@ -22,12 +22,12 @@ export class AuthController {
     description: 'Access token for future requests. Valid for 1h',
     type: AccessTokenResponseDTO,
   })
-  async login(@Body() login_dto: BasicAuthLoginDTO) {
-    const user = await this.auth_service.validate_basic_auth({
+  async login(@Req() req: Request, @Body() login_dto: BasicAuthLoginDTO) {
+    const user = await this.auth_service.validate_basic_auth(req, {
       ...login_dto,
     });
 
-    return this.auth_service.generate_jwt(user);
+    return this.auth_service.generate_jwt(req, user);
   }
 
   @Post('register')
