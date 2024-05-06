@@ -7,11 +7,10 @@ Please make sure to add the following environment variables beforehand:
 PORT=8080
 MONGO_USERNAME=admin
 MONGO_PASSWORD=password
-MONGO_HOSTNAME=
+MONGO_HOSTNAME=app_db
 MONGO_PORT=27017
 ```
 
-Set the MONGO_HOSTNAME variable to be localhost if you're running the server manually, and app_db if you're using the docker-compose.yaml.
 ### Run manually
 A MongoDB instance should be running on port 27017 on your machine with the credentials specified in the environment variables. You can change their values to your liking.
 You can do that using a docker-compose.yaml, for example:
