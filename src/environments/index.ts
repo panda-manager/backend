@@ -13,7 +13,7 @@ export const CORS_HANDLER = (origin: string, callback: CallableFunction) => {
 
 export default () => ({
   NODE_ENV: process.env.NODE_ENV,
-  APP_PORT: parseInt(process.env.APP_PORT) || 8080,
+  APP_PORT: parseInt(process.env.APP_PORT),
   APP_URL: process.env.APP_URL,
   MONGO_CONFIG: {
     USERNAME: process.env.MONGO_USERNAME,
