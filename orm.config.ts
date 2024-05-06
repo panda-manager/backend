@@ -1,4 +1,4 @@
-import { NODE_ENV, MONGO_URL, MONGO_PORT, MONGO_DB } from 'environments';
+const MONGO_URL = process.env.MONGO_URL
 
 const orm = {
   development: {
@@ -8,15 +8,11 @@ const orm = {
     url: MONGO_URL!,
   },
   staging: {
-    host: 'localhost',
-    port: MONGO_PORT!,
-    username: '',
-    password: '',
-    database: MONGO_DB!,
+    url: MONGO_URL!,
   },
   production: {
     url: MONGO_URL!,
   },
 };
 
-export default orm[NODE_ENV!];
+export default orm[process.env.NODE_ENV];

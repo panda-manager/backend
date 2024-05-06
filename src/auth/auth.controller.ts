@@ -27,18 +27,13 @@ export class AuthController {
       ...login_dto,
     });
 
-    return this.auth_service.login(user);
+    return this.auth_service.generate_jwt(user);
   }
 
   @Post('register')
   async register(@Req() req: Request, @Body() register_dto: CreateUserDTO) {
-    await this.auth_service.register(req, {
+    return await this.auth_service.register(req, {
       ...register_dto,
     });
-
-    return {
-      message:
-        'User created successfully. You can now login. !! OTP will be added here !!',
-    };
   }
 }

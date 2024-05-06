@@ -5,14 +5,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../models/user/user.module';
-import { ACCESS_TOKEN_SECRET } from '../environments';
+import { OTPModule } from '../models/otp/otp.module';
 
 @Module({
   imports: [
+    OTPModule,
     UserModule,
     PassportModule.register({ defaultStrategy: 'jwt', session: true }),
     JwtModule.register({
-      secret: ACCESS_TOKEN_SECRET,
+      secret: process.env.ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
   ],
