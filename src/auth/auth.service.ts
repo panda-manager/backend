@@ -6,13 +6,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from '../models/user/entity/user.entity';
+import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
-import { UserService } from '../models/user/user.service';
+import { UserService } from '../modules/user/user.service';
 import { Request } from 'express';
-import { UserStatus } from '../models/user/enum/user_status';
-import { CreateUserDTO } from '../models/user/dto/create_user.dto';
-import { OTPService } from '../models/otp/otp.service';
+import { UserStatus } from '../modules/user/enum/user_status';
+import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
+import { OTPService } from '../modules/otp/otp.service';
 
 @Injectable()
 export class AuthService {

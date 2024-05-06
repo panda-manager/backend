@@ -1,7 +1,7 @@
 import { ImATeapotException } from '@nestjs/common';
 
 const WHITE_LIST = ['http://localhost:4200'];
-export const CORS_HANDLER = (origin: string, callback: Function) => {
+export const CORS_HANDLER = (origin: string, callback: CallableFunction) => {
   if (!origin) {
     callback(null, true);
     return;
@@ -14,7 +14,8 @@ export const CORS_HANDLER = (origin: string, callback: Function) => {
 export default () => ({
   NODE_ENV: process.env.NODE_ENV,
   APP_PORT: parseInt(process.env.APP_PORT) || 8080,
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   APP_URL: process.env.APP_URL || `http://localhost:${this!.APP_PORT}`,
   MONGO_CONFIG: {
     USERNAME: process.env.MONGO_USERNAME || 'admin',

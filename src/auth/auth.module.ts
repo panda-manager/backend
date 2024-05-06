@@ -4,8 +4,8 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
-import { UserModule } from '../models/user/user.module';
-import { OTPModule } from '../models/otp/otp.module';
+import { UserModule } from '../modules/user/user.module';
+import { OTPModule } from '../modules/otp/otp.module';
 
 @Module({
   imports: [

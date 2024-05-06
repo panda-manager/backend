@@ -3,12 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { CredentialsModule } from './models/credentials/credentials.module';
+import { CredentialsModule } from './modules/credentials/credentials.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import environments from './environments';
-import { CredentialsEntity } from './models/credentials/entity/credentials.entity';
-import { UserEntity } from './models/user/entity/user.entity';
-import { OTPEntity } from './models/otp/entity/otp.entity';
+import { CredentialsEntity } from './modules/credentials/entity/credentials.entity';
+import { UserEntity } from './modules/user/entity/user.entity';
+import { OTPEntity } from './modules/otp/entity/otp.entity';
 
 @Module({
   imports: [
