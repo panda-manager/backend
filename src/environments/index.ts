@@ -27,6 +27,7 @@ export default () => ({
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET || 'your_secret_key',
   OTP_MAIL_ACCOUNT: {
     HOST: process.env.OTP_MAIL_HOST,
+    PORT: process.env.OTP_MAIL_PORT,
     USER: process.env.OTP_MAIL_USER,
     PASS: process.env.OTP_MAIL_PASSWORD,
   },

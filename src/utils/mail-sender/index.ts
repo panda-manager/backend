@@ -7,7 +7,6 @@ export default (
 ) => {
   // Send emails to users
   return transporter.sendMail({
-    from: 'PandaManager',
     to: email,
     subject: title,
     html: body,

@@ -54,19 +54,24 @@ export class OTPService {
   async send_verification_email(email: string, otp: string) {
     const transporter = nodemailer.createTransport({
       host: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
-      port: 587,
+      port: this.config_service.get('OTP_MAIL_ACCOUNT').PORT,
       auth: {
         user: this.config_service.get('OTP_MAIL_ACCOUNT').USER,
         pass: this.config_service.get('OTP_MAIL_ACCOUNT').PASS,
       },
+      name: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
     });
 
     await mailSender(
       transporter,
       email,
       'Verification Email',
-      `<h1>Please confirm your OTP</h1>
-       <p>Here is your OTP code: ${otp}</p>`,
+      `<html lang="en">
+            <body>
+            <h1>Please confirm your OTP</h1>
+                   <p>Here is your OTP code: ${otp}</p>
+            </body>
+            </html>`,
     );
 
     Logger.debug(`OTP sent to ${email}`);
