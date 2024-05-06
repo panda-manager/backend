@@ -14,18 +14,15 @@ export const CORS_HANDLER = (origin: string, callback: CallableFunction) => {
 export default () => ({
   NODE_ENV: process.env.NODE_ENV,
   APP_PORT: parseInt(process.env.APP_PORT) || 8080,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  APP_URL: process.env.APP_URL || `http://localhost:${this!.APP_PORT}`,
+  APP_URL: process.env.APP_URL,
   MONGO_CONFIG: {
-    USERNAME: process.env.MONGO_USERNAME || 'admin',
-    PASSWORD: process.env.MONGO_PASSWORD || 'password',
-    HOST: process.env.MONGO_HOSTNAME || 'localhost',
-    PORT: parseInt(process.env.MONGO_PORT) || 27017,
-    DB: process.env.MONGO_DB || 'panda-manager',
-    // URL: `mongodb://${(this.USERNAME)}:${this.PASSWORD}@${this.HOST}:${this.PORT}/${this.DB}?authSource=admin`,
+    USERNAME: process.env.MONGO_USERNAME,
+    PASSWORD: process.env.MONGO_PASSWORD,
+    HOST: process.env.MONGO_HOSTNAME,
+    PORT: parseInt(process.env.MONGO_PORT),
+    DB: process.env.MONGO_DB,
   },
-  ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET || 'your_secret_key',
+  ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
   OTP_MAIL_ACCOUNT: {
     HOST: process.env.OTP_MAIL_HOST,
     PORT: process.env.OTP_MAIL_PORT,

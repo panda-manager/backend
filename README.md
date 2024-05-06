@@ -11,12 +11,12 @@ MONGO_USERNAME=admin
 MONGO_PASSWORD=password
 MONGO_HOSTNAME=localhost
 MONGO_DB=panda-manager
-ACCESS_TOKEN_SECRET=your_secret_key
+ACCESS_TOKEN_SECRET=
 MONGO_PORT=27017
-OTP_MAIL_HOST=smtp-mail.outlook.com
-OTP_MAIL_USER=panda.manager@outlook.com
-OTP_MAIL_PASSWORD=MayaAndNadav!!!
-OTP_MAIL_PORT=587
+OTP_MAIL_HOST=
+OTP_MAIL_USER=
+OTP_MAIL_PASSWORD=
+OTP_MAIL_PORT=
 ```
 
 ### Run manually
