@@ -6,7 +6,10 @@ import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { configDotenv } from 'dotenv';
-configDotenv();
+import { expand as expandDotenv } from 'dotenv-expand';
+
+const env = configDotenv();
+expandDotenv(env);
 
 const bootstrap = async () => {
   const additional_config =

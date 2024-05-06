@@ -9,6 +9,7 @@ import environments from './environments';
 import { CredentialsEntity } from './modules/credentials/entity/credentials.entity';
 import { UserEntity } from './modules/user/entity/user.entity';
 import { OTPEntity } from './otp/entity/otp.entity';
+import ormConfig from '../orm.config';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { OTPEntity } from './otp/entity/otp.entity';
     CredentialsModule,
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOSTNAME}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`!,
+      url: ormConfig.url,
       synchronize: true,
       entities: [CredentialsEntity, UserEntity, OTPEntity],
     }),
