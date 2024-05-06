@@ -10,13 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { ErrorResponseDTO } from 'common/error_response.dto';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
@@ -25,11 +19,6 @@ import { Request } from 'express';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 
-@ApiResponse({
-  status: HttpStatus.UNAUTHORIZED,
-  description: 'Unauthorized',
-  type: ErrorResponseDTO,
-})
 @ApiTags('Credentials')
 @Controller('credentials')
 export class CredentialsController {

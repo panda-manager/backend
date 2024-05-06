@@ -1,14 +1,8 @@
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, HttpStatus, Put, Query } from '@nestjs/common';
-import { ErrorResponseDTO } from '../../common';
+import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Put, Query } from '@nestjs/common';
 import { OTPVerifyDTO } from './dto/otp_verify.dto';
 import { OTPService } from './otp.service';
 
-@ApiResponse({
-  status: HttpStatus.UNAUTHORIZED,
-  description: 'Unauthorized',
-  type: ErrorResponseDTO,
-})
 @ApiTags('OTP')
 @Controller('otp')
 export class OTPController {
