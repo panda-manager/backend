@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CORS_HANDLER } from './environments';
 import { SetupSwagger } from './config';
-import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { configDotenv } from 'dotenv';
@@ -19,7 +18,6 @@ const bootstrap = async () => {
 
   SetupSwagger(app);
   app.use(morgan('dev'));
-  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(parseInt(process.env.APP_PORT));
