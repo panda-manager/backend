@@ -1,6 +1,10 @@
-import * as nodemailer from 'nodemailer';
-import { Logger } from '@nestjs/common';
-export default (transporter, email: string, title: string, body: any) => {
+import { Transporter } from 'nodemailer';
+export default (
+  transporter: Transporter,
+  email: string,
+  title: string,
+  body: any,
+) => {
   // Send emails to users
   return transporter.sendMail({
     from: 'PandaManager',
