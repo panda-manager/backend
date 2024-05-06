@@ -1,14 +1,14 @@
 import { Transporter } from 'nodemailer';
 export default (
   transporter: Transporter,
-  email: string,
+  to: string,
   from: string,
   title: string,
   body: any,
 ) => {
   // Send emails to users
   return transporter.sendMail({
-    to: email,
+    to: to,
     from: from,
     subject: title,
     html: body,
