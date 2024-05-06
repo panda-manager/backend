@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from '../modules/user/user.service';
@@ -16,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 @Injectable()
 export class OTPService {
+  private readonly logger = new Logger(OTPService.name);
   constructor(
     @InjectRepository(OTPEntity)
     private otp_repository: Repository<OTPEntity>,
@@ -43,12 +39,12 @@ export class OTPService {
         `No such OTP found for user ${otp_verify_dto.email}`,
       );
 
+    this.logger.debug(`Verified device for user ${otp_verify_dto.email}`);
+
     await this.user_service.set_device_as_verified(user, found_otp.device);
     await this.otp_repository.remove(found_otp);
 
-    return {
-      message: `${found_otp.device} is now verified for user $${otp_verify_dto.email}!`,
-    };
+    return `${found_otp.device} is now verified for user $${otp_verify_dto.email}!`;
   }
 
   async send_verification_email(email: string, otp: string) {
@@ -79,7 +75,7 @@ export class OTPService {
             </html>`,
     );
 
-    Logger.debug(`OTP sent to ${email}`);
+    this.logger.debug(`OTP sent to ${email}`);
   }
 
   async send_otp(req: Request, email: string) {
