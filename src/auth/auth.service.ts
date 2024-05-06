@@ -1,4 +1,10 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
@@ -46,7 +52,7 @@ export class AuthService {
   }
 
   async validate_jwt(payload: any): Promise<UserEntity | null> {
-    const { exp, email } : { exp: number, email: string } = payload;
+    const { exp, email }: { exp: number; email: string } = payload;
 
     const found = await this.user_service.findOneBy({ email });
 
