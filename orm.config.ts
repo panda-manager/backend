@@ -1,4 +1,4 @@
-import { NODE_ENV, MONGO_URL } from 'environments';
+const MONGO_URL = process.env.MONGO_URL
 
 const orm = {
   development: {
@@ -15,4 +15,4 @@ const orm = {
   },
 };
 
-export default orm[NODE_ENV!];
+export default orm[process.env.NODE_ENV];

@@ -5,20 +5,24 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CredentialsModule } from './models/credentials/credentials.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MONGO_URL } from './environments';
+import environments from './environments';
 import { CredentialsEntity } from './models/credentials/entity/credentials.entity';
 import { UserEntity } from './models/user/entity/user.entity';
+import { OTPEntity } from './models/otp/entity/otp.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [environments],
+    }),
     AuthModule,
     CredentialsModule,
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: MONGO_URL!,
+      url: `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOSTNAME}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`!,
       synchronize: true,
-      entities: [CredentialsEntity, UserEntity],
+      entities: [CredentialsEntity, UserEntity, OTPEntity],
     }),
   ],
   controllers: [AppController],

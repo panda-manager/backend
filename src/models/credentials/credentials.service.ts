@@ -57,7 +57,7 @@ export class CredentialsService {
       display_name: created_credentials.display_name,
       host: created_credentials.host,
       login: created_credentials.login,
-    };
+    } as AppDisplayedCredentialsDTO;
   }
 
   async update(

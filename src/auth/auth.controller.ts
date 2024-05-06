@@ -32,13 +32,8 @@ export class AuthController {
 
   @Post('register')
   async register(@Req() req: Request, @Body() register_dto: CreateUserDTO) {
-    await this.auth_service.register(req, {
+    return await this.auth_service.register(req, {
       ...register_dto,
     });
-
-    return {
-      message:
-        'User created successfully. You can now login. !! OTP will be added here !!',
-    };
   }
 }

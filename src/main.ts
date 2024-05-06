@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { APP_PORT, CORS_HANDLER, NODE_ENV } from './environments';
+import { CORS_HANDLER } from './environments';
 import { SetupSwagger } from './config';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
@@ -8,7 +8,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 
 const bootstrap = async () => {
   const additional_config =
-    NODE_ENV == 'production' ? { cors: CORS_HANDLER } : {};
+    process.env.NODE_ENV == 'production' ? { cors: CORS_HANDLER } : {};
 
   const app = await NestFactory.create(AppModule, additional_config);
 
@@ -17,7 +17,9 @@ const bootstrap = async () => {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(APP_PORT);
+  await app.listen(parseInt(process.env.APP_PORT));
 };
 
-bootstrap().then(() => Logger.log(`Server is listening on port ${APP_PORT}`));
+bootstrap().then(() =>
+  Logger.log(`Server is listening on port ${process.env.APP_PORT}`),
+);
