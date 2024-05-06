@@ -60,6 +60,10 @@ export class OTPService {
         pass: this.config_service.get('OTP_MAIL_ACCOUNT').PASS,
       },
       name: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
+      tls: {
+        ciphers: "SSLv3",
+        rejectUnauthorized: false,
+      },
     });
 
     await mailSender(
