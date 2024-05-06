@@ -69,6 +69,7 @@ export class OTPService {
     await mailSender(
       transporter,
       email,
+      this.config_service.get('OTP_MAIL_ACCOUNT').USER,
       'Verification Email',
       `<html lang="en">
             <body>
