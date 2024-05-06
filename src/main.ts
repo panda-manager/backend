@@ -11,10 +11,7 @@ const env = configDotenv();
 expandDotenv(env);
 
 const bootstrap = async () => {
-  const additional_config =
-    process.env.NODE_ENV == 'production' ? { cors: CORS_HANDLER } : {};
-
-  const app = await NestFactory.create(AppModule, additional_config);
+  const app = await NestFactory.create(AppModule, { cors: CORS_HANDLER });
 
   SetupSwagger(app);
   app.use(morgan('dev'));
