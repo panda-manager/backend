@@ -42,7 +42,7 @@ export class UserEntity {
   @CreateDateColumn()
   created_at: Date;
 
-  @ApiProperty({ type: Enumerator })
+  @ApiProperty({ type: String })
   @Column({
     type: 'enum',
     enum: UserStatus,
