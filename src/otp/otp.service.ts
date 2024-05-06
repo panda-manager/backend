@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserService } from '../user/user.service';
+import { UserService } from '../modules/user/user.service';
 import { OTPEntity } from './entity/otp.entity';
 import { OTPVerifyDTO } from './dto/otp_verify.dto';
 import { generate as generateOtp } from 'otp-generator';
-import mailSender from '../../utils/mail-sender';
+import mailSender from '../utils/mail-sender';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 @Injectable()

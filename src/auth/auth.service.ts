@@ -12,7 +12,7 @@ import { UserService } from '../modules/user/user.service';
 import { Request } from 'express';
 import { UserStatus } from '../modules/user/enum/user_status';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
-import { OTPService } from '../modules/otp/otp.service';
+import { OTPService } from '../otp/otp.service';
 
 @Injectable()
 export class AuthService {

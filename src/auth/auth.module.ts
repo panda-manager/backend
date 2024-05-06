@@ -5,7 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../modules/user/user.module';
-import { OTPModule } from '../modules/otp/otp.module';
+import { OTPModule } from '../otp/otp.module';
 
 @Module({
   imports: [

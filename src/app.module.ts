@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import environments from './environments';
 import { CredentialsEntity } from './modules/credentials/entity/credentials.entity';
 import { UserEntity } from './modules/user/entity/user.entity';
-import { OTPEntity } from './modules/otp/entity/otp.entity';
+import { OTPEntity } from './otp/entity/otp.entity';
 
 @Module({
   imports: [
