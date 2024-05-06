@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserStatus } from '../enum/user_status';
+import { DeviceDTO } from '../dto/device.dto';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -31,24 +31,17 @@ export class UserEntity {
   @Column()
   master_password: string;
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({ type: [DeviceDTO] })
   @Column({
     type: 'array',
     default: [],
   })
-  devices: string[];
+  devices: DeviceDTO[];
 
   @ApiProperty({ type: Date, description: 'User creation UTC epoch' })
   @CreateDateColumn()
   created_at: Date;
 
-  @ApiProperty({ type: String })
-  @Column({
-    type: 'enum',
-    enum: UserStatus,
-    default: UserStatus.PENDING_VERIFICATION,
-  })
-  status: UserStatus;
   constructor(partial: Partial<UserEntity>) {
     if (partial) {
       Object.assign(this, partial);

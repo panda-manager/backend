@@ -20,15 +20,26 @@ export class UserService {
   insert(req: Request, create_dto: CreateUserDTO) {
     return this.user_repository.save({
       ...create_dto,
-      devices: [req.hostname],
-      status: UserStatus.PENDING_VERIFICATION,
+      devices: [
+        { identifier: req.hostname, status: UserStatus.PENDING_VERIFICATION },
+      ],
     });
   }
 
-  update_user_verified(user: UserEntity) {
+  set_device_as_verified(user: UserEntity, device: string) {
     Object.assign(user, {
       status: UserStatus.VERIFIED,
     });
+
+    const device_to_update = user.devices.find(
+      (item) => item.identifier === device,
+    );
+
+    if (device_to_update) {
+      Object.assign(device_to_update, {
+        status: UserStatus.VERIFIED,
+      });
+    }
 
     return this.user_repository.save(user);
   }
