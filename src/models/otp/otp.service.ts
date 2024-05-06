@@ -48,6 +48,7 @@ export class OTPService {
         'OTP has expired. Please generate a new one',
       );
 
+    await this.otp_repository.remove(found_otp);
     return await this.user_service.update_user_verified(user);
   }
 
@@ -61,7 +62,7 @@ export class OTPService {
       },
       name: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
       tls: {
-        ciphers: "SSLv3",
+        ciphers: 'SSLv3',
         rejectUnauthorized: false,
       },
     });
