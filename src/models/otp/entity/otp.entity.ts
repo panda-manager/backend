@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, ObjectIdColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  ObjectIdColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { ObjectId } from 'mongodb';
 import { Exclude } from 'class-transformer';
@@ -19,6 +25,7 @@ export class OTPEntity {
   readonly otp: string;
 
   @ApiProperty({ type: Date, description: 'Created at' })
+  @Index('created_at', { expireAfterSeconds: 300 })
   @CreateDateColumn()
   readonly created_at: Date;
 
