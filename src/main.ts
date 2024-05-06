@@ -5,6 +5,8 @@ import { SetupSwagger } from './config';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { configDotenv } from 'dotenv';
+configDotenv();
 
 const bootstrap = async () => {
   const additional_config =

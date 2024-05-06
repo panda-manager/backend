@@ -65,12 +65,12 @@ export class AuthService {
   async generate_jwt(req: Request, user: UserEntity) {
     if (!user) throw new UnauthorizedException();
 
-    return {
-      access_token: this.jwt_service.sign({
-        sub: user.email,
-        device: req.hostname,
-      }),
-    };
+    const access_token = this.jwt_service.sign({
+      sub: user.email,
+      device: req.hostname,
+    });
+
+    return { access_token };
   }
 
   async register(req: Request, register_dto: CreateUserDTO) {

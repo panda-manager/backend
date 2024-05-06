@@ -1,4 +1,4 @@
-const MONGO_URL = process.env.MONGO_URL
+const MONGO_URL = process.env.MONGO_URL;
 
 const orm = {
   development: {

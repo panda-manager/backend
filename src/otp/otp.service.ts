@@ -43,12 +43,12 @@ export class OTPService {
         `No such OTP found for user ${otp_verify_dto.email}`,
       );
 
-    const result = await this.user_service.set_device_as_verified(
-      user,
-      found_otp.device,
-    );
+    await this.user_service.set_device_as_verified(user, found_otp.device);
     await this.otp_repository.remove(found_otp);
-    return result;
+
+    return {
+      message: `${found_otp.device} is now verified for user $${otp_verify_dto.email}!`,
+    };
   }
 
   async send_verification_email(email: string, otp: string) {
