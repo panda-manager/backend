@@ -34,6 +34,7 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
+    "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^5.8.0",
     "morgan": "^1.10.0",

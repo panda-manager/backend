@@ -6,6 +6,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { configDotenv } from 'dotenv';
 import { expand as expandDotenv } from 'dotenv-expand';
 import nestConfig from '../nest.config';
+import helmet from 'helmet';
 
 const env = configDotenv();
 expandDotenv(env);
@@ -15,6 +16,7 @@ const bootstrap = async () => {
 
   SetupSwagger(app);
   app.use(morgan('dev'));
+  app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(parseInt(process.env.APP_PORT));
