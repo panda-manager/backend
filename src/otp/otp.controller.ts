@@ -1,5 +1,5 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Post, Put, Query, Req } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req } from '@nestjs/common';
 import { OTPVerifyDTO } from './dto/otp_verify.dto';
 import { OTPService } from './otp.service';
 import { Request } from 'express';

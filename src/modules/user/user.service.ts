@@ -6,6 +6,7 @@ import { UserEntity } from './entity/user.entity';
 import { CreateUserDTO } from './dto/create_user.dto';
 import { UserStatus } from './enum/user_status';
 import device_identifier from './device_identifier';
+import { ResponseDTO } from '../../common';
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,7 @@ export class UserService {
 
     return {
       message,
-    };
+    } as ResponseDTO;
   }
 
   async set_device_as_verified(user: UserEntity, device: string) {
@@ -60,6 +61,6 @@ export class UserService {
 
     return {
       message,
-    };
+    } as ResponseDTO;
   }
 }

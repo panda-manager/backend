@@ -14,6 +14,7 @@ import { UserStatus } from '../modules/user/enum/user_status';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { OTPService } from '../otp/otp.service';
 import device_identifier from '../modules/user/device_identifier';
+import { ResponseDTO } from '../common';
 
 @Injectable()
 export class AuthService {
@@ -93,7 +94,7 @@ export class AuthService {
       message:
         'Account created. An OTP was sent to the provided email address. ' +
         'To verify the device you have registered from, make a PUT request to /otp/verify with the code provided in your email.',
-    };
+    } as ResponseDTO;
   }
 
   get_user_profile(req: Request) {

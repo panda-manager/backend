@@ -10,6 +10,7 @@ import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import device_identifier from '../modules/user/device_identifier';
+import { ResponseDTO } from '../common';
 @Injectable()
 export class OTPService {
   private readonly logger = new Logger(OTPService.name);
@@ -46,7 +47,7 @@ export class OTPService {
 
     return {
       message: `${found_otp.device} is now verified for user $${otp_verify_dto.email}!`,
-    };
+    } as ResponseDTO;
   }
 
   async send_verification_email(email: string, otp: string) {
@@ -110,6 +111,6 @@ export class OTPService {
 
     return {
       message,
-    };
+    } as ResponseDTO;
   }
 }

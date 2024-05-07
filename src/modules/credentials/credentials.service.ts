@@ -10,6 +10,7 @@ import { ObjectId } from 'mongodb';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
+import { ResponseDTO } from '../../common';
 
 @Injectable()
 export class CredentialsService {
@@ -21,7 +22,10 @@ export class CredentialsService {
     private readonly auth_service: AuthService,
   ) {}
 
-  async insert(req: Request, create_dto: CreateCredentialsDTO) {
+  async insert(
+    req: Request,
+    create_dto: CreateCredentialsDTO,
+  ): Promise<ResponseDTO> {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
@@ -58,10 +62,13 @@ export class CredentialsService {
         host: created_credentials.host,
         login: created_credentials.login,
       } as AppDisplayedCredentialsDTO,
-    };
+    } as ResponseDTO;
   }
 
-  async update(req: Request, update_dto: UpdateCredentialsDTO) {
+  async update(
+    req: Request,
+    update_dto: UpdateCredentialsDTO,
+  ): Promise<ResponseDTO> {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
@@ -103,7 +110,7 @@ export class CredentialsService {
           host,
           login,
         } as AppDisplayedCredentialsDTO,
-      };
+      } as ResponseDTO;
     }
   }
 
@@ -162,7 +169,10 @@ export class CredentialsService {
     return found.password;
   }
 
-  async remove(req: Request, delete_dto: DeleteCredentialsDTO) {
+  async remove(
+    req: Request,
+    delete_dto: DeleteCredentialsDTO,
+  ): Promise<ResponseDTO> {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
@@ -188,6 +198,6 @@ export class CredentialsService {
 
     return {
       message,
-    };
+    } as ResponseDTO;
   }
 }
