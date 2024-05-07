@@ -9,6 +9,7 @@ import mailSender from '../utils/mail-sender';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
+import device_identifier from '../modules/user/device_identifier';
 @Injectable()
 export class OTPService {
   private readonly logger = new Logger(OTPService.name);
@@ -39,12 +40,13 @@ export class OTPService {
         `No such OTP found for user ${otp_verify_dto.email}`,
       );
 
-    this.logger.debug(`Verified device for user ${otp_verify_dto.email}`);
-
     await this.user_service.set_device_as_verified(user, found_otp.device);
+    this.logger.debug(`Verified device for user ${otp_verify_dto.email}`);
     await this.otp_repository.remove(found_otp);
 
-    return `${found_otp.device} is now verified for user $${otp_verify_dto.email}!`;
+    return {
+      message: `${found_otp.device} is now verified for user $${otp_verify_dto.email}!`,
+    };
   }
 
   async send_verification_email(email: string, otp: string) {
@@ -75,7 +77,7 @@ export class OTPService {
             </html>`,
     );
 
-    this.logger.debug(`OTP sent to ${email}`);
+    this.logger.debug(`OTP mail sent successfully to ${email}`);
   }
 
   async send_otp(req: Request, email: string) {
@@ -97,10 +99,17 @@ export class OTPService {
     const otp_payload = {
       user_id: user._id,
       otp,
-      device: req.hostname,
+      device: req[device_identifier],
     };
 
     await this.otp_repository.save(otp_payload);
     await this.send_verification_email(email, otp);
+
+    const message = `OTP generated for user ${user.email}, device ${otp_payload.device}`;
+    this.logger.log(message);
+
+    return {
+      message,
+    };
   }
 }

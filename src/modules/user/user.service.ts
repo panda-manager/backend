@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { CreateUserDTO } from './dto/create_user.dto';
 import { UserStatus } from './enum/user_status';
+import device_identifier from './device_identifier';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
   constructor(
     @InjectRepository(UserEntity)
     private user_repository: Repository<UserEntity>,
@@ -17,16 +19,26 @@ export class UserService {
     return this.user_repository.findOneBy(where);
   }
 
-  insert(req: Request, create_dto: CreateUserDTO) {
-    return this.user_repository.save({
+  async insert(req: Request, create_dto: CreateUserDTO) {
+    await this.user_repository.save({
       ...create_dto,
       devices: [
-        { identifier: req.hostname, status: UserStatus.PENDING_VERIFICATION },
+        {
+          identifier: req[device_identifier],
+          status: UserStatus.PENDING_VERIFICATION,
+        },
       ],
     });
+
+    const message = `User ${create_dto.email} inserted to DB`;
+    this.logger.log(message);
+
+    return {
+      message,
+    };
   }
 
-  set_device_as_verified(user: UserEntity, device: string) {
+  async set_device_as_verified(user: UserEntity, device: string) {
     Object.assign(user, {
       status: UserStatus.VERIFIED,
     });
@@ -41,6 +53,13 @@ export class UserService {
       });
     }
 
-    return this.user_repository.save(user);
+    await this.user_repository.save(user);
+
+    const message = `User ${user.email} has verified device ${device}`;
+    this.logger.log(message);
+
+    return {
+      message,
+    };
   }
 }

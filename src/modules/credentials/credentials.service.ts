@@ -21,10 +21,7 @@ export class CredentialsService {
     private readonly auth_service: AuthService,
   ) {}
 
-  async insert(
-    req: Request,
-    create_dto: CreateCredentialsDTO,
-  ): Promise<AppDisplayedCredentialsDTO> {
+  async insert(req: Request, create_dto: CreateCredentialsDTO) {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
@@ -49,22 +46,22 @@ export class CredentialsService {
         user_id: user._id,
       });
 
-    this.logger.log(
-      `Credentials for host ${create_dto.host} created successfully for user ${user.email}.`,
-    );
+    const message = `Credentials for host ${create_dto.host} created successfully for user ${user.email}.`;
+
+    this.logger.log(message);
 
     return {
-      _id: created_credentials._id as ObjectId,
-      display_name: created_credentials.display_name,
-      host: created_credentials.host,
-      login: created_credentials.login,
-    } as AppDisplayedCredentialsDTO;
+      message,
+      data: {
+        _id: created_credentials._id as ObjectId,
+        display_name: created_credentials.display_name,
+        host: created_credentials.host,
+        login: created_credentials.login,
+      } as AppDisplayedCredentialsDTO,
+    };
   }
 
-  async update(
-    req: Request,
-    update_dto: UpdateCredentialsDTO,
-  ): Promise<AppDisplayedCredentialsDTO> {
+  async update(req: Request, update_dto: UpdateCredentialsDTO) {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
@@ -95,16 +92,18 @@ export class CredentialsService {
       const { _id, display_name, host, login } =
         await this.credentials_repository.save(existing_credentials);
 
-      this.logger.log(
-        `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`,
-      );
+      const message = `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`;
+      this.logger.log(message);
 
       return {
-        _id,
-        display_name,
-        host,
-        login,
-      } as AppDisplayedCredentialsDTO;
+        message,
+        data: {
+          _id,
+          display_name,
+          host,
+          login,
+        } as AppDisplayedCredentialsDTO,
+      };
     }
   }
 
@@ -163,7 +162,7 @@ export class CredentialsService {
     return found.password;
   }
 
-  async remove(req: Request, delete_dto: DeleteCredentialsDTO): Promise<void> {
+  async remove(req: Request, delete_dto: DeleteCredentialsDTO) {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
@@ -183,8 +182,12 @@ export class CredentialsService {
       );
 
     await this.credentials_repository.remove(found);
-    this.logger.debug(
-      `Credentials for host ${delete_dto.host} deleted for user ${user.email}`,
-    );
+
+    const message = `Credentials for host ${delete_dto.host} deleted for user ${user.email}`;
+    this.logger.debug(message);
+
+    return {
+      message,
+    };
   }
 }
