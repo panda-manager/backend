@@ -4,7 +4,6 @@ This is an API implemented with NestJS for the Panda Manager application.
 ## Running the server
 Please make sure to add the following environment variables beforehand:
 ```
-PORT=8080
 APP_PORT=8080
 APP_URL=http://localhost:8080
 MONGO_USERNAME=admin
@@ -17,6 +16,7 @@ OTP_MAIL_HOST=
 OTP_MAIL_USER=
 OTP_MAIL_PASSWORD=
 OTP_MAIL_PORT=
+NODE_ENV
 ```
 
 ### Run manually
