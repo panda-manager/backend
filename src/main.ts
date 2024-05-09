@@ -7,6 +7,7 @@ import { configDotenv } from 'dotenv';
 import { expand as expandDotenv } from 'dotenv-expand';
 import nestConfig from '../nest.config';
 import helmet from 'helmet';
+declare const module: any & { hot: any };
 
 const env = configDotenv();
 expandDotenv(env);
@@ -20,6 +21,11 @@ const bootstrap = async () => {
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(parseInt(process.env.APP_PORT));
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 };
 
 bootstrap().then(() =>
