@@ -47,7 +47,7 @@ export class AuthService {
     )
       throw new ForbiddenException(
         'Requested device is not a trusted device. ' +
-          'POST Request to /otp from this device to get an OTP with your email, and verify it using a PUT /otp/verify (from whatever device)',
+          'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
       );
 
     return user_record;
