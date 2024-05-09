@@ -1,7 +1,9 @@
 import { CORS_HANDLER } from './src/environments';
 
 const options = {
-  development: {},
+  development: {
+    cors: CORS_HANDLER,
+  },
   testing: {},
   staging: {},
   production: {

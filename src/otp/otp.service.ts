@@ -46,7 +46,7 @@ export class OTPService {
     await this.otp_repository.remove(found_otp);
 
     return {
-      message: `${found_otp.device} is now verified for user $${otp_verify_dto.email}!`,
+      message: `${found_otp.device} is now verified for user ${otp_verify_dto.email}!`,
     } as ResponseDTO;
   }
 

@@ -1,13 +1,14 @@
 import { ImATeapotException } from '@nestjs/common';
 
-const WHITE_LIST = ['http://localhost:4200'];
+const WHITE_LIST = ['*'];
 export const CORS_HANDLER = (origin: string, callback: CallableFunction) => {
   if (!origin) {
     callback(null, true);
     return;
   }
 
-  if (WHITE_LIST.includes(origin)) callback(null, true);
+  if (WHITE_LIST.includes('*') || WHITE_LIST.includes(origin))
+    callback(null, true);
   else callback(new ImATeapotException('Not allowed by CORS'), false);
 };
 
