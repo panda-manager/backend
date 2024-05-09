@@ -92,8 +92,7 @@ export class AuthService {
 
     return {
       message:
-        'Account created. An OTP was sent to the provided email address. ' +
-        'To verify the device you have registered from, make a PUT request to /otp/verify with the code provided in your email.',
+        'Account created. An OTP was sent to the provided email address.',
     } as ResponseDTO;
   }
 
