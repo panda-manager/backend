@@ -5,18 +5,19 @@ This is an API implemented with NestJS for the Panda Manager application.
 Please make sure to add the following environment variables beforehand:
 ```
 APP_PORT=8080
-APP_URL=http://localhost:8080
+APP_URL="http://localhost:${APP_PORT}"
 MONGO_USERNAME=admin
 MONGO_PASSWORD=password
-MONGO_HOSTNAME=app_db // use localhost if you're running manually 
+MONGO_HOSTNAME=localhost
 MONGO_DB=panda-manager
-ACCESS_TOKEN_SECRET=
 MONGO_PORT=27017
-OTP_MAIL_HOST=
+MONGO_URL="mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin"
+ACCESS_TOKEN_SECRET=
+OTP_MAIL_HOST=smtp-mail.outlook.com
 OTP_MAIL_USER=
 OTP_MAIL_PASSWORD=
-OTP_MAIL_PORT=
-NODE_ENV
+OTP_MAIL_PORT=587
+NODE_ENV=development
 ```
 
 ### Run manually

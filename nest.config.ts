@@ -4,8 +4,6 @@ const options = {
   development: {
     cors: CORS_HANDLER,
   },
-  testing: {},
-  staging: {},
   production: {
     cors: CORS_HANDLER,
   },

@@ -21,7 +21,7 @@ export class OTPService {
     private readonly config_service: ConfigService,
   ) {}
 
-  async verify_otp(otp_verify_dto: OTPVerifyDTO) {
+  async verify_otp(otp_verify_dto: OTPVerifyDTO): Promise<ResponseDTO> {
     const user = await this.user_service.findOneBy({
       email: otp_verify_dto.email,
     });
@@ -47,10 +47,10 @@ export class OTPService {
 
     return {
       message: `${found_otp.device} is now verified for user ${otp_verify_dto.email}!`,
-    } as ResponseDTO;
+    };
   }
 
-  async send_verification_email(email: string, otp: string) {
+  async send_verification_email(email: string, otp: string): Promise<void> {
     const transporter = nodemailer.createTransport({
       host: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
       port: this.config_service.get('OTP_MAIL_ACCOUNT').PORT,
@@ -83,7 +83,7 @@ export class OTPService {
     this.logger.debug(`OTP mail sent successfully to ${email}`);
   }
 
-  async send_otp(req: Request, email: string) {
+  async send_otp(req: Request, email: string): Promise<ResponseDTO> {
     const user = await this.user_service.findOneBy({
       email,
     });
@@ -111,8 +111,6 @@ export class OTPService {
     const message = `OTP generated for user ${user.email}, device ${otp_payload.device}`;
     this.logger.log(message);
 
-    return {
-      message,
-    } as ResponseDTO;
+    return { message };
   }
 }

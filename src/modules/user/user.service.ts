@@ -16,11 +16,11 @@ export class UserService {
     private user_repository: Repository<UserEntity>,
   ) {}
 
-  findOneBy(where: any) {
+  findOneBy(where: any): Promise<UserEntity> {
     return this.user_repository.findOneBy(where);
   }
 
-  async insert(req: Request, create_dto: CreateUserDTO) {
+  async insert(req: Request, create_dto: CreateUserDTO): Promise<ResponseDTO> {
     await this.user_repository.save({
       ...create_dto,
       devices: [
@@ -34,12 +34,13 @@ export class UserService {
     const message = `User ${create_dto.email} inserted to DB`;
     this.logger.log(message);
 
-    return {
-      message,
-    } as ResponseDTO;
+    return { message };
   }
 
-  async set_device_as_verified(user: UserEntity, device: string) {
+  async set_device_as_verified(
+    user: UserEntity,
+    device: string,
+  ): Promise<ResponseDTO> {
     Object.assign(user, {
       status: UserStatus.VERIFIED,
     });
@@ -59,8 +60,6 @@ export class UserService {
     const message = `User ${user.email} has verified device ${device}`;
     this.logger.log(message);
 
-    return {
-      message,
-    } as ResponseDTO;
+    return { message };
   }
 }
