@@ -6,7 +6,6 @@ export default (
   title: string,
   body: any,
 ): Promise<any> => {
-  // Send emails to users
   return transporter.sendMail({
     to: to,
     from: from,
