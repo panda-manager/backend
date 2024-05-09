@@ -15,6 +15,7 @@ import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { OTPService } from '../otp/otp.service';
 import device_identifier from '../modules/user/device_identifier';
 import { ResponseDTO } from '../common';
+import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +54,7 @@ export class AuthService {
     return user_record;
   }
 
-  async validate_jwt(payload: any): Promise<UserEntity | null> {
+  async validate_jwt(payload: any): Promise<UserEntity> {
     const { exp, sub: email } = payload;
 
     const found = await this.user_service.findOneBy({ email });
@@ -64,7 +65,10 @@ export class AuthService {
     return found;
   }
 
-  async generate_jwt(req: Request, user: UserEntity) {
+  async generate_jwt(
+    req: Request,
+    user: UserEntity,
+  ): Promise<AccessTokenResponseDTO> {
     if (!user) throw new UnauthorizedException();
 
     const access_token = this.jwt_service.sign({
@@ -75,7 +79,10 @@ export class AuthService {
     return { access_token };
   }
 
-  async register(req: Request, register_dto: CreateUserDTO) {
+  async register(
+    req: Request,
+    register_dto: CreateUserDTO,
+  ): Promise<ResponseDTO> {
     const is_email_taken = await this.user_service.findOneBy({
       email: register_dto.email,
     });
@@ -93,10 +100,10 @@ export class AuthService {
     return {
       message:
         'Account created. An OTP was sent to the provided email address.',
-    } as ResponseDTO;
+    };
   }
 
-  get_user_profile(req: Request) {
+  get_user_profile(req: Request): Promise<UserEntity> {
     return this.validate_jwt(req.header('Authorization'));
   }
 }

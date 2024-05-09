@@ -3,13 +3,19 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Post,
   Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
@@ -18,6 +24,7 @@ import { Request } from 'express';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
+import { ResponseDTO } from '../../common';
 
 @ApiTags('Credentials')
 @Controller('credentials')
@@ -26,23 +33,31 @@ export class CredentialsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     status: HttpStatus.CREATED,
-    type: AppDisplayedCredentialsDTO,
+    type: ResponseDTO,
   })
+  @HttpCode(HttpStatus.CREATED)
   @Post()
-  insert(@Req() req: Request, @Body() create_dto: CreateCredentialsDTO) {
+  insert(
+    @Req() req: Request,
+    @Body() create_dto: CreateCredentialsDTO,
+  ): Promise<ResponseDTO> {
     return this.credentials_service.insert(req, create_dto);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     status: HttpStatus.OK,
-    type: AppDisplayedCredentialsDTO,
+    type: ResponseDTO,
   })
+  @HttpCode(HttpStatus.OK)
   @Put()
-  update(@Req() req: Request, @Body() update_dto: UpdateCredentialsDTO) {
+  update(
+    @Req() req: Request,
+    @Body() update_dto: UpdateCredentialsDTO,
+  ): Promise<ResponseDTO> {
     return this.credentials_service.update(req, update_dto);
   }
 
@@ -52,8 +67,9 @@ export class CredentialsController {
     status: HttpStatus.OK,
     type: [AppDisplayedCredentialsDTO],
   })
+  @HttpCode(HttpStatus.OK)
   @Get()
-  get_all(@Req() req: Request) {
+  get_all(@Req() req: Request): Promise<AppDisplayedCredentialsDTO[]> {
     return this.credentials_service.get_app_displayed_credentials(req);
   }
 
@@ -63,8 +79,12 @@ export class CredentialsController {
     status: HttpStatus.OK,
     type: String,
   })
+  @HttpCode(HttpStatus.OK)
   @Post('password')
-  get_password(@Req() req: Request, @Body() get_password_dto: GetPasswordDTO) {
+  get_password(
+    @Req() req: Request,
+    @Body() get_password_dto: GetPasswordDTO,
+  ): Promise<string> {
     return this.credentials_service.get_password(req, get_password_dto);
   }
 
@@ -72,9 +92,14 @@ export class CredentialsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     status: HttpStatus.OK,
+    type: ResponseDTO,
   })
+  @HttpCode(HttpStatus.OK)
   @Delete()
-  remove(@Req() req: Request, @Body() delete_dto: DeleteCredentialsDTO) {
+  remove(
+    @Req() req: Request,
+    @Body() delete_dto: DeleteCredentialsDTO,
+  ): Promise<ResponseDTO> {
     return this.credentials_service.remove(req, delete_dto);
   }
 }

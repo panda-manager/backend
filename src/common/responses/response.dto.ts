@@ -6,17 +6,20 @@ export class ResponseDTO {
     example: 'xxxxxxxxxx',
     description: 'The message of the error response',
   })
-  readonly message: string;
+  @IsOptional()
+  readonly message?: string;
 
   @ApiProperty({
     example: 'abcdef/{ data: 123 }',
     description: 'Data, if there is any',
   })
-  readonly data: object[] | string | object | number;
   @IsOptional()
+  readonly data?: object[] | string | object | number;
+
   @ApiProperty({
     example: '1724654565771',
     description: 'The epoch representation of the error response timestamp',
   })
-  readonly timestamp: number;
+  @IsOptional()
+  readonly timestamp?: number;
 }
