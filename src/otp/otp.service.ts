@@ -74,6 +74,8 @@ export class OTPService {
             <body>
             <h1>Please confirm your OTP</h1>
                    <p>Here is your OTP code: ${otp}</p>
+                   <p>Please visit this link to verify the device you requested the code from:</p>
+                   <a href=${this.config_service.get('APP_URL')}/otp/verify?otp=${otp}&email=${email}>Click here!</a>
             </body>
             </html>`,
     );
