@@ -25,10 +25,7 @@ export class AuthService {
     private readonly user_service: UserService,
     private readonly otp_service: OTPService,
   ) {}
-  async validate_basic_auth(
-    req: Request,
-    user: BasicAuthLoginDTO,
-  ): Promise<UserEntity> {
+  async login(req: Request, user: BasicAuthLoginDTO): Promise<UserEntity> {
     this.logger.log(`Login attempted for user ${user.email}`);
 
     const user_record = await this.user_service.findOneBy({
@@ -52,17 +49,6 @@ export class AuthService {
       );
 
     return user_record;
-  }
-
-  async validate_jwt(payload: any): Promise<UserEntity> {
-    const { exp, sub: email } = payload;
-
-    const found = await this.user_service.findOneBy({ email });
-
-    if (!found || (exp && exp < Date.now() / 1000))
-      throw new UnauthorizedException();
-
-    return found;
   }
 
   async generate_jwt(
@@ -103,7 +89,13 @@ export class AuthService {
     };
   }
 
-  get_user_profile(req: Request): Promise<UserEntity> {
-    return this.validate_jwt(req.header('Authorization'));
+  async get_user_profile(req: Request): Promise<UserEntity> {
+    const jwt = req.headers.authorization.split(' ')[1];
+    const payload = this.jwt_service.decode(jwt);
+    const found = await this.user_service.findOneBy({ email: payload.sub });
+
+    if (!found) throw new UnauthorizedException();
+
+    return found;
   }
 }

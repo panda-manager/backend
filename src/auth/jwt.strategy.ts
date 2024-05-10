@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AuthService } from './auth.service';
 import { configDotenv } from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { expand as expandDotenv } from 'dotenv-expand';
+import { UserService } from 'modules/user/user.service';
+import { UserEntity } from 'modules/user/entity/user.entity';
 
 const env = configDotenv();
 expandDotenv(env);
@@ -12,7 +13,7 @@ expandDotenv(env);
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly auth_service: AuthService,
+    private readonly user_service: UserService,
     private readonly config_service: ConfigService,
   ) {
     super({
@@ -22,7 +23,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
-    return this.auth_service.validate_jwt(payload);
+  async validate(payload: any): Promise<UserEntity> {
+    const { exp, sub } = payload;
+
+    const found = await this.user_service.findOneBy({ email: sub });
+
+    if (!found || (exp && exp < Date.now() / 1000))
+      throw new UnauthorizedException();
+
+    return found;
   }
 }
