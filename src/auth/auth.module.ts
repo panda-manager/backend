@@ -6,6 +6,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../modules/user/user.module';
 import { OTPModule } from '../otp/otp.module';
+import auth_token_config from '../../auth_token.config';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { OTPModule } from '../otp/otp.module';
     PassportModule.register({ defaultStrategy: 'jwt', session: true }),
     JwtModule.register({
       secret: process.env.ACCESS_TOKEN_SECRET,
-      signOptions: { expiresIn: '1h' },
+      signOptions: auth_token_config,
     }),
   ],
   providers: [AuthService, JwtStrategy],
