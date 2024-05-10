@@ -27,12 +27,13 @@ export class AuthController {
     @Req() req: Request,
     @Body() login_dto: BasicAuthLoginDTO,
   ): Promise<AccessTokenResponseDTO> {
-    const user = await this.auth_service.validate_basic_auth(req, {
+    const user = await this.auth_service.login(req, {
       ...login_dto,
     });
 
     return this.auth_service.generate_jwt(req, user);
   }
+
   @ApiCreatedResponse({
     description: 'User created, OTP sent to email',
     type: ResponseDTO,
