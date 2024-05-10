@@ -5,14 +5,16 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
+  Req, UseGuards,
 } from '@nestjs/common';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { Request } from 'express';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 import { ResponseDTO } from '../common';
+import { AuthGuard } from '@nestjs/passport';
+import { ValidateMasterDTO } from './dto/validate_master.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -47,5 +49,17 @@ export class AuthController {
     return await this.auth_service.register(req, {
       ...register_dto,
     });
+  }
+
+  @ApiOkResponse({
+    description: 'User master password validation',
+    type: ResponseDTO,
+  })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  @Post('/validate/master')
+  async validate_master_password(@Req() req: Request, @Body() validate_master_dto: ValidateMasterDTO): Promise<ResponseDTO> {
+    return this.auth_service.validate_master_password(req, validate_master_dto.master_password);
   }
 }
