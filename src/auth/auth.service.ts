@@ -90,6 +90,8 @@ export class AuthService {
   }
 
   async get_user_profile(req: Request): Promise<UserEntity> {
+    if (req.user instanceof UserEntity) return req.user;
+
     const jwt = req.headers.authorization.split(' ')[1];
     const payload = this.jwt_service.decode(jwt);
     const found = await this.user_service.findOneBy({ email: payload.sub });
