@@ -98,4 +98,18 @@ export class AuthService {
 
     return found;
   }
+
+  async validate_master_password(
+    req: Request,
+    master_password: string,
+  ): Promise<ResponseDTO> {
+    const user = await this.get_user_profile(req);
+
+    if (user.master_password !== master_password)
+      throw new ForbiddenException('Password is incorrect');
+
+    return {
+      message: 'Validation succeeded!',
+    };
+  }
 }
