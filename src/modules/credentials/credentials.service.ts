@@ -116,13 +116,14 @@ export class CredentialsService {
 
   async get_app_displayed_credentials(
     req: Request,
+    host?: string,
   ): Promise<AppDisplayedCredentialsDTO[]> {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(`Attempting to pull all user ${user.email} passwords.`);
 
     const found: CredentialsEntity[] = await this.credentials_repository.find({
-      where: { user_id: user._id },
+      where: host ? { user_id: user._id, host: host } : { user_id: user._id },
     });
 
     this.logger.log(
