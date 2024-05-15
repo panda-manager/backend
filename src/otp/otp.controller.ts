@@ -1,4 +1,4 @@
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -28,6 +28,16 @@ export class OTPController {
   @HttpCode(HttpStatus.OK)
   @Header('Content-Type', 'text/html')
   @Get('verify')
+  @ApiQuery({
+    name: 'email',
+    type: String,
+    required: true,
+  })
+  @ApiQuery({
+    name: 'otp',
+    type: String,
+    required: true,
+  })
   async verify_otp(
     @Query('email') email: string,
     @Query('otp') otp: string,
