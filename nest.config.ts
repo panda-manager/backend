@@ -1,4 +1,4 @@
-import { CORS_HANDLER } from './src/environments';
+import { CORS_HANDLER, NODE_ENV } from './src/environments';
 
 const options = {
   development: {
@@ -9,4 +9,4 @@ const options = {
   },
 };
 
-export default options[process.env.NODE_ENV];
+export default options[NODE_ENV];

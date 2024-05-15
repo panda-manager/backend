@@ -1,3 +1,5 @@
+import { NODE_ENV } from './src/environments';
+
 const auth_token_config = {
   development: {},
   production: {
@@ -5,4 +7,4 @@ const auth_token_config = {
   },
 };
 
-export default auth_token_config[process.env.NODE_ENV];
+export default auth_token_config[NODE_ENV];

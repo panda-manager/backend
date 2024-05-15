@@ -1,10 +1,12 @@
+import { MONGO_CONFIG, NODE_ENV } from './src/environments';
+
 const orm = {
   development: {
-    url: process.env.MONGO_URL,
+    url: MONGO_CONFIG.URL,
   },
   production: {
-    url: process.env.MONGO_URL,
+    url: MONGO_CONFIG.URL,
   },
 };
 
-export default orm[process.env.NODE_ENV];
+export default orm[NODE_ENV];
