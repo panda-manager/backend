@@ -112,4 +112,24 @@ export class CredentialsController {
   ): Promise<ResponseDTO> {
     return this.credentials_service.remove(req, delete_dto);
   }
+
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'host',
+    type: String,
+    required: true,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    type: ResponseDTO,
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get('existence')
+  has_any(
+    @Req() req: Request,
+    @Query('host') host: string,
+  ): Promise<ResponseDTO> {
+    return this.credentials_service.has_any(req, host);
+  }
 }

@@ -201,4 +201,16 @@ export class CredentialsService {
       message,
     } as ResponseDTO;
   }
+
+  async has_any(req: Request, host: string): Promise<ResponseDTO> {
+    const has_any_credentials: boolean =
+      (await this.get_app_displayed_credentials(req, host)).length > 0;
+
+    return {
+      message: has_any_credentials
+        ? 'Matching credentials found'
+        : `No credentials for host ${host}`,
+      data: has_any_credentials,
+    };
+  }
 }

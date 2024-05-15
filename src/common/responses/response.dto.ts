@@ -14,7 +14,7 @@ export class ResponseDTO {
     description: 'Data, if there is any',
   })
   @IsOptional()
-  readonly data?: object[] | string | object | number;
+  readonly data?: object[] | string | object | number | boolean;
 
   @ApiProperty({
     example: '1724654565771',
