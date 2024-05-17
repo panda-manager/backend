@@ -21,9 +21,8 @@ import ormConfig from '../orm.config';
     CredentialsModule,
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: ormConfig.url,
-      synchronize: true,
       entities: [CredentialsEntity, UserEntity, OTPEntity],
+      ...ormConfig,
     }),
   ],
   controllers: [AppController],
