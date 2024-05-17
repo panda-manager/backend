@@ -5,6 +5,7 @@ import { configDotenv } from 'dotenv';
 const env = configDotenv();
 expandDotenv(env);
 
+//#region CORS
 const WHITE_LIST = ['*'];
 export const CORS_HANDLER = (origin: string, callback: CallableFunction) => {
   if (!origin) {
@@ -16,30 +17,34 @@ export const CORS_HANDLER = (origin: string, callback: CallableFunction) => {
     callback(null, true);
   else callback(new ImATeapotException('Not allowed by CORS'), false);
 };
+//#endregion
 
+//#region APP
 export const NODE_ENV = process.env.NODE_ENV;
 
 export const APP_PORT = parseInt(process.env.APP_PORT);
 
 export const APP_URL = process.env.APP_URL;
 
-export const MONGO_CONFIG = {
-  USERNAME: process.env.MONGO_USERNAME,
-  PASSWORD: process.env.MONGO_PASSWORD,
-  HOST: process.env.MONGO_HOSTNAME,
-  PORT: parseInt(process.env.MONGO_PORT),
-  DB: process.env.MONGO_DB,
-  URL: process.env.MONGO_URL,
-};
-
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+//#endregion
 
+//#region DB
+export const MONGO_CONFIG = {
+  URL: process.env.MONGO_URL,
+  CERT: process.env.MONGO_CERT,
+  KEY: process.env.MONGO_KEY,
+};
+//#endregion
+
+//#region OTP
 export const OTP_MAIL_ACCOUNT = {
   HOST: process.env.OTP_MAIL_HOST,
   PORT: process.env.OTP_MAIL_PORT,
   USER: process.env.OTP_MAIL_USER,
   PASS: process.env.OTP_MAIL_PASSWORD,
 };
+//#endregion
 
 export default () => ({
   NODE_ENV,
