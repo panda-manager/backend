@@ -50,7 +50,10 @@ export class OTPService {
     };
   }
 
-  async send_verification_email(email: string, otp: string): Promise<void> {
+  private async send_verification_email(
+    email: string,
+    otp: string,
+  ): Promise<void> {
     const transporter = nodemailer.createTransport({
       host: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
       port: this.config_service.get('OTP_MAIL_ACCOUNT').PORT,
