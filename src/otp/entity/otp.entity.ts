@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { ObjectId } from 'mongodb';
-import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'otp' })
 export class OTPEntity {
@@ -17,7 +16,6 @@ export class OTPEntity {
 
   @ApiProperty({ type: ObjectId, description: "User's ObjectId" })
   @Column()
-  @Exclude()
   readonly user_id: ObjectId;
 
   @ApiProperty({ type: String, description: 'OTP Code' })
