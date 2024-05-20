@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, ObjectIdColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import { ObjectId } from 'mongodb';
 
 @Entity({ name: 'credentials' })
@@ -9,7 +8,6 @@ export class CredentialsEntity {
   @ObjectIdColumn()
   _id: ObjectId;
 
-  @Exclude()
   @Column()
   user_id: ObjectId;
 
@@ -28,6 +26,9 @@ export class CredentialsEntity {
   @ApiProperty({ type: String, description: 'Encrypted password' })
   @Column()
   password: string;
+
+  @Column({ type: Boolean, default: false })
+  deleted: boolean;
 
   @CreateDateColumn()
   created_at: Date;

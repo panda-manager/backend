@@ -37,6 +37,7 @@ export class CredentialsService {
         user_id: user._id,
         host: create_dto.host,
         login: create_dto.login,
+        deleted: false,
       });
 
     if (existing_credentials)
@@ -48,6 +49,7 @@ export class CredentialsService {
       await this.credentials_repository.save({
         ...create_dto,
         user_id: user._id,
+        deleted: false,
       });
 
     const message = `Credentials for host ${create_dto.host} created successfully for user ${user.email}.`;
@@ -79,39 +81,39 @@ export class CredentialsService {
       user_id: user._id,
       host: update_dto.host,
       login: update_dto.login,
+      deleted: false,
     });
 
     if (!existing_credentials)
       throw new BadRequestException(
         `No such credentials for user ${user.email}`,
       );
-    else {
-      Object.assign(existing_credentials, {
-        login: update_dto.new_login,
-        password: update_dto.new_password,
-        display_name: update_dto.new_display_name,
-      });
 
-      this.logger.debug(
-        `Found matching credentials for host ${update_dto.host}, user ${user.email}. Attempting update...`,
-      );
+    Object.assign(existing_credentials, {
+      login: update_dto.new_login,
+      password: update_dto.new_password,
+      display_name: update_dto.new_display_name,
+    });
 
-      const { _id, display_name, host, login } =
-        await this.credentials_repository.save(existing_credentials);
+    this.logger.debug(
+      `Found matching credentials for host ${update_dto.host}, user ${user.email}. Attempting update...`,
+    );
 
-      const message = `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`;
-      this.logger.log(message);
+    const { _id, display_name, host, login } =
+      await this.credentials_repository.save(existing_credentials);
 
-      return {
-        message,
-        data: {
-          _id,
-          display_name,
-          host,
-          login,
-        } as AppDisplayedCredentialsDTO,
-      } as ResponseDTO;
-    }
+    const message = `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`;
+    this.logger.log(message);
+
+    return {
+      message,
+      data: {
+        _id,
+        display_name,
+        host,
+        login,
+      } as AppDisplayedCredentialsDTO,
+    } as ResponseDTO;
   }
 
   async get_app_displayed_credentials(
@@ -123,7 +125,9 @@ export class CredentialsService {
     this.logger.debug(`Attempting to pull all user ${user.email} passwords.`);
 
     const found: CredentialsEntity[] = await this.credentials_repository.find({
-      where: host ? { user_id: user._id, host: host } : { user_id: user._id },
+      where: host
+        ? { user_id: user._id, host: host, deleted: false }
+        : { user_id: user._id, deleted: false },
     });
 
     this.logger.log(
@@ -157,6 +161,7 @@ export class CredentialsService {
         user_id: user._id,
         host: get_password_dto.host,
         login: get_password_dto.login,
+        deleted: false,
       });
 
     if (!found)
@@ -180,19 +185,23 @@ export class CredentialsService {
       `Deleting password for user ${user.email}, host ${delete_dto.host}`,
     );
 
-    const found: CredentialsEntity =
+    const existing_credentials: CredentialsEntity =
       await this.credentials_repository.findOneBy({
         user_id: user._id,
         host: delete_dto.host,
         login: delete_dto.login,
+        deleted: false,
       });
 
-    if (!found)
+    if (!existing_credentials)
       throw new BadRequestException(
         `No such credentials for user ${user.email}`,
       );
 
-    await this.credentials_repository.remove(found);
+    Object.assign(existing_credentials, {
+      deleted: true,
+    });
+    await this.credentials_repository.save(existing_credentials);
 
     const message = `Credentials for host ${delete_dto.host} deleted for user ${user.email}`;
     this.logger.debug(message);

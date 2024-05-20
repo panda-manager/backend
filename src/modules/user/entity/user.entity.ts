@@ -5,7 +5,6 @@ import {
   ObjectId,
   CreateDateColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { DeviceDTO } from '../dto/device.dto';
 
@@ -27,7 +26,6 @@ export class UserEntity {
   @Column()
   email: string;
 
-  @Exclude()
   @Column()
   master_password: string;
 
