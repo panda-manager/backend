@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { DeviceDTO } from '../dto/device.dto';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -27,6 +28,7 @@ export class UserEntity {
   email: string;
 
   @Column()
+  @Exclude()
   master_password: string;
 
   @ApiProperty({ type: [DeviceDTO] })
