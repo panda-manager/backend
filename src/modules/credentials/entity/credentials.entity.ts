@@ -7,10 +7,11 @@ import { Exclude } from 'class-transformer';
 export class CredentialsEntity {
   @ApiProperty({ type: String, description: "Credentials' ObjectId" })
   @ObjectIdColumn()
+  @Exclude()
   _id: ObjectId;
 
   @Column()
-  @Exclude()
+  @Exclude({ toPlainOnly: true })
   user_id: ObjectId;
 
   @ApiProperty({ type: String, example: 'Facebook' })
@@ -25,14 +26,15 @@ export class CredentialsEntity {
   @Column()
   login: string;
 
-  @Exclude()
+  @Exclude({ toPlainOnly: true })
   @Column()
   password: string;
 
-  @Exclude()
+  @Exclude({ toPlainOnly: true })
   @Column({ type: Boolean, default: false })
   deleted: boolean;
 
+  @Exclude({ toPlainOnly: true })
   @CreateDateColumn()
   created_at: Date;
 

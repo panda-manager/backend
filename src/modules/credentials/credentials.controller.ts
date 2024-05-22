@@ -20,21 +20,21 @@ import {
 } from '@nestjs/swagger';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
-import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
 import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
+import { CredentialsEntity } from './entity/credentials.entity';
 
+@ApiBearerAuth()
 @ApiTags('Credentials')
+@UseGuards(AuthGuard('jwt'))
 @Controller('credentials')
 export class CredentialsController {
   constructor(private readonly credentials_service: CredentialsService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @ApiCreatedResponse({
     status: HttpStatus.CREATED,
     type: ResponseDTO,
@@ -48,8 +48,6 @@ export class CredentialsController {
     return this.credentials_service.insert(req, create_dto);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @ApiCreatedResponse({
     status: HttpStatus.OK,
     type: ResponseDTO,
@@ -63,8 +61,6 @@ export class CredentialsController {
     return this.credentials_service.update(req, update_dto);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     status: HttpStatus.OK,
     type: String,
@@ -78,11 +74,9 @@ export class CredentialsController {
     return this.credentials_service.get_password(req, get_password_dto);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     status: HttpStatus.OK,
-    type: [AppDisplayedCredentialsDTO],
+    type: [CredentialsEntity],
   })
   @ApiQuery({
     name: 'host',
@@ -94,12 +88,10 @@ export class CredentialsController {
   get_all(
     @Req() req: Request,
     @Query('host') host?: string,
-  ): Promise<AppDisplayedCredentialsDTO[]> {
+  ): Promise<CredentialsEntity[]> {
     return this.credentials_service.get_app_displayed_credentials(req, host);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     status: HttpStatus.OK,
     type: ResponseDTO,
@@ -113,13 +105,11 @@ export class CredentialsController {
     return this.credentials_service.remove(req, delete_dto);
   }
 
-  @ApiBearerAuth()
   @ApiQuery({
     name: 'host',
     type: String,
     required: true,
   })
-  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     status: HttpStatus.OK,
     type: ResponseDTO,
