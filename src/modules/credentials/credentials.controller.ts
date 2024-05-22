@@ -20,13 +20,13 @@ import {
 } from '@nestjs/swagger';
 import { CredentialsService } from './credentials.service';
 import { AuthGuard } from '@nestjs/passport';
-import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
 import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
+import { CredentialsEntity } from './entity/credentials.entity';
 
 @ApiTags('Credentials')
 @Controller('credentials')
@@ -82,7 +82,7 @@ export class CredentialsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     status: HttpStatus.OK,
-    type: [AppDisplayedCredentialsDTO],
+    type: [CredentialsEntity],
   })
   @ApiQuery({
     name: 'host',
@@ -94,7 +94,7 @@ export class CredentialsController {
   get_all(
     @Req() req: Request,
     @Query('host') host?: string,
-  ): Promise<AppDisplayedCredentialsDTO[]> {
+  ): Promise<CredentialsEntity[]> {
     return this.credentials_service.get_app_displayed_credentials(req, host);
   }
 

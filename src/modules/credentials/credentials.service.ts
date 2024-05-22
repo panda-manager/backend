@@ -5,8 +5,6 @@ import { Repository } from 'typeorm';
 import { CredentialsEntity } from './entity/credentials.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from '../../auth/auth.service';
-import { AppDisplayedCredentialsDTO } from './dto/app_displayed_credentials';
-import { ObjectId } from 'mongodb';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
@@ -59,11 +57,10 @@ export class CredentialsService {
     return {
       message,
       data: {
-        _id: created_credentials._id as ObjectId,
         display_name: created_credentials.display_name,
         host: created_credentials.host,
         login: created_credentials.login,
-      } as AppDisplayedCredentialsDTO,
+      } as CredentialsEntity,
     } as ResponseDTO;
   }
 
@@ -99,7 +96,7 @@ export class CredentialsService {
       `Found matching credentials for host ${update_dto.host}, user ${user.email}. Attempting update...`,
     );
 
-    const { _id, display_name, host, login } =
+    const { display_name, host, login } =
       await this.credentials_repository.save(existing_credentials);
 
     const message = `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`;
@@ -108,18 +105,17 @@ export class CredentialsService {
     return {
       message,
       data: {
-        _id,
         display_name,
         host,
         login,
-      } as AppDisplayedCredentialsDTO,
+      } as CredentialsEntity,
     } as ResponseDTO;
   }
 
   async get_app_displayed_credentials(
     req: Request,
     host?: string,
-  ): Promise<AppDisplayedCredentialsDTO[]> {
+  ): Promise<CredentialsEntity[]> {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(`Attempting to pull all user ${user.email} passwords.`);
@@ -134,16 +130,7 @@ export class CredentialsService {
       `Found ${found.length} credentials for user ${user.email}.`,
     );
 
-    return found.map((item: CredentialsEntity) => {
-      const { _id, display_name, host, login } = item;
-
-      return {
-        _id,
-        display_name,
-        host,
-        login,
-      } as AppDisplayedCredentialsDTO;
-    });
+    return found;
   }
 
   async get_password(

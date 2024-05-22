@@ -13,6 +13,7 @@ import { Exclude } from 'class-transformer';
 export class UserEntity {
   @ApiProperty({ description: "User's ObjectId" })
   @ObjectIdColumn()
+  @Exclude()
   _id: ObjectId;
 
   @ApiProperty({ type: String, example: 'John' })
@@ -28,7 +29,7 @@ export class UserEntity {
   email: string;
 
   @Column()
-  @Exclude()
+  @Exclude({ toPlainOnly: true })
   master_password: string;
 
   @ApiProperty({ type: [DeviceDTO] })
@@ -36,6 +37,7 @@ export class UserEntity {
     type: 'array',
     default: [],
   })
+  @Exclude({ toPlainOnly: true })
   devices: DeviceDTO[];
 
   @ApiProperty({ type: Date, description: 'User creation UTC epoch' })
