@@ -6,7 +6,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../modules/user/user.module';
 import { OTPModule } from '../otp/otp.module';
-import auth_token_config from '../../auth_token.config';
+import auth_token_config from './config/auth_token.config';
 import { ACCESS_TOKEN_SECRET } from '../environments';
 
 @Module({
