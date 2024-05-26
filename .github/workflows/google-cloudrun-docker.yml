@@ -6,7 +6,7 @@ on:
 
 env:
   PROJECT_ID: panda-manager-422520
-  GAR_LOCATION: northamerica-northeast1
+  GAR_LOCATION: us-central1
   SERVICE: panda-manager-backend
   REGION: us-central1
   
