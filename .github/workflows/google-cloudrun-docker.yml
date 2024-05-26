@@ -38,21 +38,21 @@ jobs:
           password: '${{ steps.auth.outputs.access_token }}'
           registry: '${{ env.GAR_LOCATION }}-docker.pkg.dev'
 
-      - name: Create .env file
-        run: |
-          touch .env
-          echo APP_PORT=${{ vars.APP_PORT }} >> .env
-          echo MONGO_HOST=${{ vars.MONGO_HOST }} >> .env
-          echo MONGO_DB=${{ vars.MONGO_DB }} >> .env
-          echo MONGO_CERT=${{ secrets.MONGO_CERT }} >> .env
-          echo MONGO_KEY=${{ secrets.MONGO_KEY }} >> .env
-          echo MONGO_URL="mongodb+srv://${MONGO_HOST}/${MONGO_DB}?authMechanism=MONGODB-X509&authSource=\$external&appName=PandaManagerGCP&retryWrites=true&w=majority" >> .env
-          echo ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} >> .env
-          echo OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} >> .env
-          echo OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} >> .env
-          echo OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} >> .env
-          echo OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} >> .env
-          echo NODE_ENV=production >> .env
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          APP_PORT: ${{ vars.APP_PORT }}
+          MONGO_HOST: ${{ vars.MONGO_HOST }}
+          MONGO_DB: ${{ vars.MONGO_DB }}
+          MONGO_CERT: ${{ secrets.MONGO_CERT }}
+          MONGO_KEY: ${{ secrets.MONGO_KEY }}
+          MONGO_URL: "mongodb+srv://${MONGO_HOST}/${MONGO_DB}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority"
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          OTP_MAIL_HOST: ${{ vars.OTP_MAIL_HOST }}
+          OTP_MAIL_USER: ${{ secrets.OTP_MAIL_USER }}
+          OTP_MAIL_PASSWORD: ${{ secrets.OTP_MAIL_PASSWORD }}
+          OTP_MAIL_PORT: ${{ vars.OTP_MAIL_PORT }}
+          NODE_ENV: production
           
       - name: Build and Push Container
         run: |-
