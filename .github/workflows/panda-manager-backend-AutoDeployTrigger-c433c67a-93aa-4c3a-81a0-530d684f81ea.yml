@@ -60,7 +60,7 @@ jobs:
           registryPassword: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_PASSWORD }}
           containerAppName: panda-manager-backend
           resourceGroup: PandaManager
-          imageToBuild: ghcr.io/panda-manager-backend:${{ github.sha }}
+          imageToBuild: ghcr.io/panda-manager/backend:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
 
