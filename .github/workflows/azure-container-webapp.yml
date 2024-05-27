@@ -32,7 +32,8 @@ jobs:
 
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-        
+      - name: print at
+        run: echo "ACCESS_TOKEN=${{ secrets.GITHUB_TOKEN }}"        
       - name: Create env file
         uses: SpicyPizza/create-envfile@v2.0
         with:
