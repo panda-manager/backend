@@ -45,7 +45,7 @@ jobs:
           envkey_MONGO_DB: ${{ vars.MONGO_DB }}
           envkey_MONGO_CERT: ${{ secrets.MONGO_CERT }}
           envkey_MONGO_KEY: ${{ secrets.MONGO_KEY }}
-          envkey_MONGO_URL: "mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority"
+          envkey_MONGO_URL: mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority
           envkey_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
           envkey_OTP_MAIL_HOST: ${{ vars.OTP_MAIL_HOST }}
           envkey_OTP_MAIL_USER: ${{ secrets.OTP_MAIL_USER }}
