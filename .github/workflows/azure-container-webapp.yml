@@ -34,21 +34,24 @@ jobs:
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
         
       - name: Create env file
-        shell: bash
-        run: |
-          touch .env
-          echo APP_PORT=${{ vars.APP_PORT }} >> .env
-          echo MONGO_HOST=${{ vars.MONGO_HOST }} >> .env
-          echo MONGO_DB=${{ vars.MONGO_DB }} >> .env
-          echo MONGO_CERT=${{ secrets.MONGO_CERT }} >> .env
-          echo MONGO_KEY=${{ secrets.MONGO_KEY }} >> .env
-          echo MONGO_URL="mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority" >> .env
-          echo ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} >> .env
-          echo OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} >> .env
-          echo OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} >> .env
-          echo OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} >> .env
-          echo OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} >> .env
-          echo NODE_ENV=production >> .env
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          directory: ./
+          file_name: .env
+          fail_on_empty: false
+          sort_keys: false
+          envkey_APP_PORT: ${{ vars.APP_PORT }}
+          envkey_MONGO_HOST: ${{ vars.MONGO_HOST }}
+          envkey_MONGO_DB: ${{ vars.MONGO_DB }}
+          envkey_MONGO_CERT: ${{ secrets.MONGO_CERT }}
+          envkey_MONGO_KEY: ${{ secrets.MONGO_KEY }}
+          envkey_MONGO_URL: "mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority"
+          envkey_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          envkey_OTP_MAIL_HOST: ${{ vars.OTP_MAIL_HOST }}
+          envkey_OTP_MAIL_USER: ${{ secrets.OTP_MAIL_USER }}
+          envkey_OTP_MAIL_PASSWORD: ${{ secrets.OTP_MAIL_PASSWORD }}
+          envkey_OTP_MAIL_PORT: ${{ vars.OTP_MAIL_PORT }}
+          envkey_NODE_ENV: production
           
       - name: Build and push container image to registry
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
