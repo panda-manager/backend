@@ -1,0 +1,77 @@
+name: Trigger auto deployment for panda-manager-backend
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/panda-manager-backend-AutoDeployTrigger-c433c67a-93aa-4c3a-81a0-530d684f81ea.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+      - name: Create certs
+        shell: bash
+        run: |
+          cd ./src
+          mkdir ssl
+          cd ssl
+          touch cert.pem
+          echo ${{ secrets.MONGO_CERT }} >> cert.pem
+          touch key.pem
+          echo ${{ secrets.MONGO_KEY }} >> key.pem
+
+      - name: Create env file
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          directory: ./
+          file_name: .env
+          fail_on_empty: false
+          sort_keys: false
+          envkey_APP_PORT: ${{ vars.APP_PORT }}
+          envkey_MONGO_HOST: ${{ vars.MONGO_HOST }}
+          envkey_MONGO_DB: ${{ vars.MONGO_DB }}
+          # envkey_MONGO_CERT: "${{ secrets.MONGO_CERT }}"
+          # envkey_MONGO_KEY: "${{ secrets.MONGO_KEY }}"
+          envkey_MONGO_URL: mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority
+          envkey_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          envkey_OTP_MAIL_HOST: ${{ vars.OTP_MAIL_HOST }}
+          envkey_OTP_MAIL_USER: ${{ secrets.OTP_MAIL_USER }}
+          envkey_OTP_MAIL_PASSWORD: ${{ secrets.OTP_MAIL_PASSWORD }}
+          envkey_OTP_MAIL_PORT: ${{ vars.OTP_MAIL_PORT }}
+          envkey_NODE_ENV: production
+          
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: ghcr.io
+          registryUsername: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_PASSWORD }}
+          containerAppName: panda-manager-backend
+          resourceGroup: PandaManager
+          imageToBuild: ghcr.io/panda-manager/backend:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+
