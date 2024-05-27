@@ -23,6 +23,16 @@ jobs:
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
+      - name: Create certs
+        shell: bash
+        run: |
+          cd ./src
+          mkdir ssl
+          cd ssl
+          touch cert.pem
+          echo ${{ secrets.MONGO_CERT }} >> cert.pem
+          touch key.pem
+          echo ${{ secrets.MONGO_KEY }} >> key.pem
 
       - name: Create env file
         uses: SpicyPizza/create-envfile@v2.0
@@ -34,8 +44,8 @@ jobs:
           envkey_APP_PORT: ${{ vars.APP_PORT }}
           envkey_MONGO_HOST: ${{ vars.MONGO_HOST }}
           envkey_MONGO_DB: ${{ vars.MONGO_DB }}
-          envkey_MONGO_CERT: "${{ secrets.MONGO_CERT }}"
-          envkey_MONGO_KEY: "${{ secrets.MONGO_KEY }}"
+          # envkey_MONGO_CERT: "${{ secrets.MONGO_CERT }}"
+          # envkey_MONGO_KEY: "${{ secrets.MONGO_KEY }}"
           envkey_MONGO_URL: mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority
           envkey_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
           envkey_OTP_MAIL_HOST: ${{ vars.OTP_MAIL_HOST }}
