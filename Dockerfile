@@ -7,8 +7,6 @@ WORKDIR /usr/src/app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-RUN mkdir ssl
-
 # Install app dependencies
 RUN npm i -g pnpm
 RUN pnpm i
@@ -18,6 +16,9 @@ COPY . .
 
 # Creates a "dist" folder with the production build
 RUN npm run build
+
+# Prepare a folder for certs
+RUN mkdir dist/ssl
 
 # Start the server using the production build
 CMD [ "npm", "run", "start:prod" ]
