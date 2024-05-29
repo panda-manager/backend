@@ -1,21 +1,34 @@
-# Base image
-FROM node:20
+# Stage 1: Build
+FROM node:20 AS build
 
 # Create app directory
 WORKDIR /usr/src/app
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install app dependencies
+# Install dependencies using pnpm
 RUN npm i -g pnpm
 RUN pnpm i
 
-# Bundle app source
+# Copy app source code
 COPY . .
 
-# Creates a "dist" folder with the production build
+# Build the app
 RUN npm run build
+
+# Stage 2: Production
+FROM node:20 AS production
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Copy only the dist folder from the build stage
+COPY --from=build /usr/src/app/dist ./dist
+
+# Copy node_modules and package.json from the build stage
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/package.json ./
 
 # Start the server using the production build
 CMD [ "npm", "run", "start:prod" ]
