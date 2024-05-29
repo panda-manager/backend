@@ -22,7 +22,7 @@ export const CORS_HANDLER = (origin: string, callback: CallableFunction) => {
 //#region APP
 export const NODE_ENV = process.env.NODE_ENV;
 
-export const APP_PORT = parseInt(process.env.APP_PORT);
+export const APP_PORT = parseInt(process.env.APP_PORT) || 8080;
 
 export const APP_URL = process.env.APP_URL;
 

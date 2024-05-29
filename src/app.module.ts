@@ -27,6 +27,4 @@ import ormConfig from '../orm.config';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor() {}
-}
+export class AppModule {}
