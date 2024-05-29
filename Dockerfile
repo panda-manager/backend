@@ -17,8 +17,5 @@ COPY . .
 # Creates a "dist" folder with the production build
 RUN npm run build
 
-# Prepare a folder for certs
-RUN mkdir dist/ssl
-
 # Start the server using the production build
 CMD [ "npm", "run", "start:prod" ]
