@@ -8,8 +8,8 @@ const orm = {
   production: {
     url: MONGO_CONFIG.URL,
     ssl: true,
-    sslCert: '/ssl/cert.pem',
-    sslKey: '/ssl/key.pem',
+    sslCert: 'ssl/cert.pem',
+    sslKey: 'ssl/key.pem',
   },
 };
 
