@@ -30,11 +30,7 @@ export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 //#endregion
 
 //#region DB
-export const MONGO_CONFIG = {
-  URL: process.env.MONGO_URL,
-  CERT: process.env.MONGO_CERT,
-  KEY: process.env.MONGO_KEY,
-};
+export const MONGO_URL = process.env.MONGO_URL;
 //#endregion
 
 //#region OTP
@@ -50,7 +46,7 @@ export default () => ({
   NODE_ENV,
   APP_PORT,
   APP_URL,
-  MONGO_CONFIG,
+  MONGO_URL,
   ACCESS_TOKEN_SECRET,
   OTP_MAIL_ACCOUNT,
   CORS_HANDLER,
