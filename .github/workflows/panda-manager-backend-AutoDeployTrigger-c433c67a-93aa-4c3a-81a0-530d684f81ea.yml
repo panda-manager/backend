@@ -23,16 +23,6 @@ jobs:
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
-      - name: Create certs
-        shell: bash
-        run: |
-          cd ./src
-          mkdir ssl
-          cd ssl
-          touch cert.pem
-          echo ${{ secrets.MONGO_CERT }} >> cert.pem
-          touch key.pem
-          echo ${{ secrets.MONGO_KEY }} >> key.pem
 
       - name: Create env file
         uses: SpicyPizza/create-envfile@v2.0
