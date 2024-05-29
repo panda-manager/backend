@@ -20,7 +20,6 @@ import ormConfig from '../orm.config';
     AuthModule,
     CredentialsModule,
     TypeOrmModule.forRoot({
-      type: 'mongodb',
       entities: [CredentialsEntity, UserEntity, OTPEntity],
       ...ormConfig,
     }),
