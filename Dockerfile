@@ -29,6 +29,7 @@ COPY --from=build /usr/src/app/dist ./dist
 # Copy node_modules and package.json from the build stage
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/package.json ./
+COPY --from=build /usr/src/app/.env ./
 
 # Start the server using the production build
 CMD [ "npm", "run", "start:prod" ]
