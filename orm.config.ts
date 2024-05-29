@@ -13,8 +13,8 @@ const orm: Record<Mode, Partial<TypeOrmModuleOptions>> = {
     type: 'mongodb',
     url: MONGO_URL,
     ssl: true,
-    sslCert: '/mnt/ssl/cert.pem',
-    sslKey: '/mnt/ssl/key.pem',
+    sslCert: 'ssl/cert.pem',
+    sslKey: 'ssl/key.pem',
   },
 };
 
