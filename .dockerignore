@@ -1,6 +1,12 @@
 Dockerfile
 .dockerignore
 node_modules
+.eslintrc.js
+.gitignore
+.prettierrc
+docker-compose.yaml
+webpack.config.js
 npm-debug.log
+test
 dist
 .github
