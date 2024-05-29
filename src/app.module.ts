@@ -17,12 +17,12 @@ import ormConfig from '../orm.config';
       isGlobal: true,
       load: [environments],
     }),
-    // AuthModule,
-    // CredentialsModule,
-    // TypeOrmModule.forRoot({
-    //   entities: [CredentialsEntity, UserEntity, OTPEntity],
-    //   ...ormConfig,
-    // }),
+    AuthModule,
+    CredentialsModule,
+    TypeOrmModule.forRoot({
+      entities: [CredentialsEntity, UserEntity, OTPEntity],
+      ...ormConfig,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
