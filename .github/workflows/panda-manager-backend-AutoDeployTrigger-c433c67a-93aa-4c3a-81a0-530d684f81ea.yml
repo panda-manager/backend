@@ -57,7 +57,7 @@ jobs:
           registryUrl: ghcr.io
           registryUsername: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_PASSWORD }}
-          containerAppName: panda-manager-backend
+          containerAppName: backend
           resourceGroup: PandaManager
           imageToBuild: ghcr.io/panda-manager/backend:${{ github.sha }}
           _buildArgumentsKey_: |
