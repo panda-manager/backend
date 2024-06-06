@@ -32,6 +32,7 @@ jobs:
           file_name: .env
           fail_on_empty: false
           sort_keys: false
+          envkey_APP_URL: ${{ vars.APP_URL }}
           envkey_APP_PORT: ${{ vars.APP_PORT }}
           envkey_MONGO_HOST: ${{ vars.MONGO_HOST }}
           envkey_MONGO_DB: ${{ vars.MONGO_DB }}
