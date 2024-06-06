@@ -9,8 +9,8 @@ import mailSender from '../utils/mail-sender';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import device_identifier from '../modules/user/device_identifier';
 import { ResponseDTO } from '../common';
+import { getDeviceIdentifier } from '../modules/user/device_identifier';
 @Injectable()
 export class OTPService {
   private readonly logger = new Logger(OTPService.name);
@@ -105,7 +105,7 @@ export class OTPService {
     const otp_payload = {
       user_id: user._id,
       otp,
-      device: req[device_identifier],
+      device: getDeviceIdentifier(req),
     };
 
     await this.otp_repository.save(otp_payload);

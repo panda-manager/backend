@@ -13,9 +13,9 @@ import { Request } from 'express';
 import { UserStatus } from '../modules/user/enum/user_status';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { OTPService } from '../otp/otp.service';
-import device_identifier from '../modules/user/device_identifier';
 import { ResponseDTO } from '../common';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
+import { getDeviceIdentifier } from '../modules/user/device_identifier';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +36,7 @@ export class AuthService {
       throw new UnauthorizedException('Username or password are incorrect!');
 
     const request_device = user_record.devices.find(
-      (item) => item.identifier === req[device_identifier],
+      (item) => item.identifier === getDeviceIdentifier(req),
     );
 
     if (
@@ -59,7 +59,7 @@ export class AuthService {
 
     const access_token = this.jwt_service.sign({
       sub: user.email,
-      device: req[device_identifier],
+      device: getDeviceIdentifier(req),
     });
 
     return { access_token };
