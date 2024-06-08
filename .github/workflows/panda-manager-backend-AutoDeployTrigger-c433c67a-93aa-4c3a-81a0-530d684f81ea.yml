@@ -25,25 +25,6 @@ jobs:
       - name: Checkout to the branch
         uses: actions/checkout@v2
 
-      - name: Create env file
-        uses: SpicyPizza/create-envfile@v2
-        with:
-          directory: ./
-          file_name: .env
-          fail_on_empty: false
-          sort_keys: false
-          envkey_APP_URL: ${{ vars.APP_URL }}
-          envkey_APP_PORT: ${{ vars.APP_PORT }}
-          envkey_MONGO_HOST: ${{ vars.MONGO_HOST }}
-          envkey_MONGO_DB: ${{ vars.MONGO_DB }}
-          envkey_MONGO_URL: mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=\\$external&appName=PandaManagerGCP&retryWrites=true&w=majority
-          envkey_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          envkey_OTP_MAIL_HOST: ${{ vars.OTP_MAIL_HOST }}
-          envkey_OTP_MAIL_USER: ${{ secrets.OTP_MAIL_USER }}
-          envkey_OTP_MAIL_PASSWORD: ${{ secrets.OTP_MAIL_PASSWORD }}
-          envkey_OTP_MAIL_PORT: ${{ vars.OTP_MAIL_PORT }}
-          envkey_NODE_ENV: production
-
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -61,6 +42,6 @@ jobs:
           containerAppName: backend
           resourceGroup: PandaManager
           imageToBuild: ghcr.io/panda-manager/backend:${{ github.sha }}
+          environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
           _buildArgumentsKey_: |
             _buildArgumentsValues_
-
