@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, ImATeapotException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from '../modules/user/user.service';
@@ -11,6 +11,8 @@ import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { ResponseDTO } from '../common';
 import { getDeviceIdentifier } from '../modules/user/device_identifier';
+import { UserStatus } from '../modules/user/enum/user_status';
+
 @Injectable()
 export class OTPService {
   private readonly logger = new Logger(OTPService.name);
@@ -95,6 +97,13 @@ export class OTPService {
 
     if (!user)
       throw new BadRequestException(`No such user with email ${email}`);
+    else if (
+      user.devices.find((element) => element.identifier === device)?.status ===
+      UserStatus.VERIFIED
+    )
+      throw new ImATeapotException(
+        `Device ${device} is already verified for user ${user.email}`,
+      );
 
     let otp = generateOtp(6);
     let result = await this.otp_repository.findOneBy({ otp });
