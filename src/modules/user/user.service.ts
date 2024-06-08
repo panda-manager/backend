@@ -62,4 +62,22 @@ export class UserService {
 
     return { message };
   }
+
+  async add_device(user: UserEntity, identifier: string): Promise<ResponseDTO> {
+    Object.assign(user, {
+      devices: [
+        ...user.devices,
+        {
+          identifier,
+          status: UserStatus.PENDING_VERIFICATION,
+        },
+      ],
+    });
+
+    await this.user_repository.save(user);
+
+    return {
+      message: `New device added for user ${user.email}, identifier: ${identifier}`,
+    };
+  }
 }

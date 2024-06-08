@@ -87,6 +87,8 @@ export class OTPService {
   }
 
   async send_otp(req: Request, email: string): Promise<ResponseDTO> {
+    const device = getDeviceIdentifier(req);
+
     const user = await this.user_service.findOneBy({
       email,
     });
@@ -105,10 +107,11 @@ export class OTPService {
     const otp_payload = {
       user_id: user._id,
       otp,
-      device: getDeviceIdentifier(req),
+      device,
     };
 
     await this.otp_repository.save(otp_payload);
+    await this.user_service.add_device(user, device);
     await this.send_verification_email(email, otp);
 
     const message = `OTP generated for user ${user.email}, device ${otp_payload.device}`;
