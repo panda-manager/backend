@@ -11,12 +11,10 @@ export class UpdateCredentialsDTO {
   readonly login: string;
 
   @ApiProperty({ type: String, example: 'Facebook' })
-  @IsNotEmpty()
-  readonly new_display_name: string;
+  readonly new_display_name?: string;
 
   @ApiProperty({ type: String, example: 'new_username' })
-  @IsNotEmpty()
-  readonly new_login: string;
+  readonly new_login?: string;
 
   @ApiProperty({ type: String, description: 'Encrypted password' })
   @IsNotEmpty()
