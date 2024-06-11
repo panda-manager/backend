@@ -3,7 +3,7 @@ import { NODE_ENV } from '../../environments';
 const auth_token_config = {
   development: {},
   production: {
-    expiresIn: '24h',
+    expiresIn: '3000h', // TODO: Change expire
   },
 };
 
