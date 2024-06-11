@@ -25,7 +25,7 @@ import { ValidateMasterDTO } from './dto/validate_master.dto';
 export class AuthController {
   constructor(private readonly auth_service: AuthService) {}
   @ApiOkResponse({
-    description: 'Access token for future requests. Valid for 1h',
+    description: 'Access token for future requests',
     type: AccessTokenResponseDTO,
   })
   @HttpCode(HttpStatus.OK)

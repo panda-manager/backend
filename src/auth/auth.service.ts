@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { UserService } from '../modules/user/user.service';
-import { Request } from 'express';
+import { request, Request } from 'express';
 import { UserStatus } from '../modules/user/enum/user_status';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { OTPService } from '../otp/otp.service';
@@ -39,14 +39,23 @@ export class AuthService {
       (item) => item.identifier === getDeviceIdentifier(req),
     );
 
-    if (
-      !request_device ||
-      request_device.status == UserStatus.PENDING_VERIFICATION
-    )
-      throw new ForbiddenException(
-        'Requested device is not a trusted device. ' +
-          'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
+    if (!request_device)
+      await this.user_service.add_device(user_record, getDeviceIdentifier(req));
+    else if (request_device.status === UserStatus.PENDING_VERIFICATION)
+      await this.user_service.set_device_as_verified(
+        user_record,
+        getDeviceIdentifier(req),
       );
+
+    // TODO: Re-add
+    // if (
+    //   !request_device ||
+    //   request_device.status === UserStatus.PENDING_VERIFICATION
+    // )
+    // throw new ForbiddenException(
+    //   'Requested device is not a trusted device. ' +
+    //     'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
+    // );
 
     return user_record;
   }
@@ -79,13 +88,24 @@ export class AuthService {
       );
 
     await this.user_service.insert(req, register_dto);
-    await this.otp_service.send_otp(req, register_dto.email);
 
-    this.logger.log(`Account ${register_dto.email} created, OTP sent.`);
+    // TODO: Delete this
+    const inserted_user = await this.user_service.findOneBy({
+      email: register_dto.email,
+    });
+
+    await this.user_service.set_device_as_verified(
+      inserted_user,
+      getDeviceIdentifier(req),
+    );
+
+    // TODO: Re-add
+    // await this.otp_service.send_otp(req, register_dto.email);
+    // this.logger.log(`Account ${register_dto.email} created, OTP sent.`);
 
     return {
-      message:
-        'Account created. An OTP was sent to the provided email address.',
+      message: 'Account created successfully!',
+      // 'Account created. An OTP was sent to the provided email address.',
     };
   }
 
