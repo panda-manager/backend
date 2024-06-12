@@ -9,6 +9,7 @@ import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
+import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
 
 @Injectable()
 export class CredentialsService {
@@ -169,7 +170,7 @@ export class CredentialsService {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
-      `Deleting password for user ${user.email}, host ${delete_dto.host}`,
+      `Deleting credentials for user ${user.email}, host ${delete_dto.host}`,
     );
 
     const existing_credentials: CredentialsEntity =
@@ -213,5 +214,39 @@ export class CredentialsService {
         : `No credentials for host ${host}`,
       data: has_any_credentials,
     };
+  }
+
+  async restore(req: Request, restore_dto: RestoreCredentialsDTO) {
+    const user = await this.auth_service.get_user_profile(req);
+
+    this.logger.debug(
+      `Restoring credentials for user ${user.email}, host ${restore_dto.host}`,
+    );
+
+    const existing_credentials: CredentialsEntity =
+      await this.credentials_repository.findOneBy({
+        user_id: user._id,
+        host: restore_dto.host,
+        login: restore_dto.login,
+        deleted: true,
+      });
+
+    if (!existing_credentials)
+      throw new BadRequestException(
+        `No such deleted credentials for user ${user.email}`,
+      );
+
+    Object.assign(existing_credentials, {
+      deleted: false,
+    });
+
+    await this.credentials_repository.save(existing_credentials);
+
+    const message = `Credentials for host ${restore_dto.host} restored for user ${user.email}`;
+    this.logger.debug(message);
+
+    return {
+      message,
+    } as ResponseDTO;
   }
 }
