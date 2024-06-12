@@ -185,10 +185,15 @@ export class CredentialsService {
         `No such credentials for user ${user.email}`,
       );
 
-    Object.assign(existing_credentials, {
-      deleted: true,
-    });
-    await this.credentials_repository.save(existing_credentials);
+    if (delete_dto.deletion_type === 'hard')
+      await this.credentials_repository.remove(existing_credentials);
+    else {
+      Object.assign(existing_credentials, {
+        deleted: true,
+      });
+
+      await this.credentials_repository.save(existing_credentials);
+    }
 
     const message = `Credentials for host ${delete_dto.host} deleted for user ${user.email}`;
     this.logger.debug(message);
