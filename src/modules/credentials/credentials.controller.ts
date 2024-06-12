@@ -27,6 +27,7 @@ import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
 import { CredentialsEntity } from './entity/credentials.entity';
+import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credentials')
@@ -121,5 +122,15 @@ export class CredentialsController {
     @Query('host') host: string,
   ): Promise<ResponseDTO> {
     return this.credentials_service.has_any(req, host);
+  }
+
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    type: ResponseDTO,
+  })
+  @HttpCode(HttpStatus.OK)
+  @Put('restore')
+  restore(@Req() req: Request, @Body() restore_dto: RestoreCredentialsDTO) {
+    return this.credentials_service.restore(req, restore_dto);
   }
 }
