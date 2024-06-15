@@ -88,9 +88,10 @@ export class CredentialsService {
       );
 
     Object.assign(existing_credentials, {
-      login: update_dto.new_login,
       password: update_dto.new_password,
-      display_name: update_dto.new_display_name,
+      login: update_dto.new_login ?? existing_credentials.login,
+      display_name:
+        update_dto.new_display_name ?? existing_credentials.display_name,
     });
 
     this.logger.debug(
