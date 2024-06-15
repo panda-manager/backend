@@ -10,6 +10,7 @@ import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
 import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
+import { HistoryService } from '../history/history.service';
 
 @Injectable()
 export class CredentialsService {
@@ -18,6 +19,7 @@ export class CredentialsService {
   constructor(
     @InjectRepository(CredentialsEntity)
     private credentials_repository: Repository<CredentialsEntity>,
+    private readonly history_service: HistoryService,
     private readonly auth_service: AuthService,
   ) {}
 
@@ -87,19 +89,23 @@ export class CredentialsService {
         `No such credentials for user ${user.email}`,
       );
 
-    Object.assign(existing_credentials, {
-      password: update_dto.new_password,
-      login: update_dto.new_login ?? existing_credentials.login,
-      display_name:
-        update_dto.new_display_name ?? existing_credentials.display_name,
-    });
-
     this.logger.debug(
       `Found matching credentials for host ${update_dto.host}, user ${user.email}. Attempting update...`,
     );
 
+    await this.history_service.insert(existing_credentials);
+    await this.credentials_repository.remove(existing_credentials);
+
     const { display_name, host, login } =
-      await this.credentials_repository.save(existing_credentials);
+      await this.credentials_repository.save({
+        user_id: existing_credentials.user_id,
+        host: existing_credentials.host,
+        password: update_dto.new_password,
+        deleted: false,
+        login: update_dto.new_login ?? existing_credentials.login,
+        display_name:
+          update_dto.new_display_name ?? existing_credentials.display_name,
+      } as CredentialsEntity);
 
     const message = `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`;
     this.logger.log(message);
