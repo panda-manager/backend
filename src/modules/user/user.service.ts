@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { CreateUserDTO } from './dto/create_user.dto';
@@ -16,7 +16,7 @@ export class UserService {
     private user_repository: Repository<UserEntity>,
   ) {}
 
-  findOneBy(where: any): Promise<UserEntity> {
+  findOneBy(where: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
     return this.user_repository.findOneBy(where);
   }
 
