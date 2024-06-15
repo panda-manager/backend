@@ -9,4 +9,7 @@ export class RestoreCredentialsDTO {
   @ApiProperty({ type: String, example: 'username' })
   @IsNotEmpty()
   readonly login: string;
+
+  @ApiProperty({ type: Boolean })
+  readonly from_history?: boolean;
 }

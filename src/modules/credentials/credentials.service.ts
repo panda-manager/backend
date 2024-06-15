@@ -10,6 +10,8 @@ import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
 import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
+import { HistoryService } from '../history/history.service';
+import { HistoryEntity } from '../history/entity/history.entity';
 
 @Injectable()
 export class CredentialsService {
@@ -18,6 +20,7 @@ export class CredentialsService {
   constructor(
     @InjectRepository(CredentialsEntity)
     private credentials_repository: Repository<CredentialsEntity>,
+    private readonly history_service: HistoryService,
     private readonly auth_service: AuthService,
   ) {}
 
@@ -87,19 +90,23 @@ export class CredentialsService {
         `No such credentials for user ${user.email}`,
       );
 
-    Object.assign(existing_credentials, {
-      password: update_dto.new_password,
-      login: update_dto.new_login ?? existing_credentials.login,
-      display_name:
-        update_dto.new_display_name ?? existing_credentials.display_name,
-    });
-
     this.logger.debug(
       `Found matching credentials for host ${update_dto.host}, user ${user.email}. Attempting update...`,
     );
 
+    await this.history_service.insert(existing_credentials);
+    await this.credentials_repository.remove(existing_credentials);
+
     const { display_name, host, login } =
-      await this.credentials_repository.save(existing_credentials);
+      await this.credentials_repository.save({
+        user_id: existing_credentials.user_id,
+        host: existing_credentials.host,
+        password: update_dto.new_password,
+        deleted: false,
+        login: update_dto.new_login ?? existing_credentials.login,
+        display_name:
+          update_dto.new_display_name ?? existing_credentials.display_name,
+      } as CredentialsEntity);
 
     const message = `Credentials for host ${update_dto.host} updated successfully for user ${user.email}.`;
     this.logger.log(message);
@@ -217,7 +224,10 @@ export class CredentialsService {
     };
   }
 
-  async restore(req: Request, restore_dto: RestoreCredentialsDTO) {
+  private async restore_deleted(
+    req: Request,
+    restore_dto: RestoreCredentialsDTO,
+  ): Promise<ResponseDTO> {
     const user = await this.auth_service.get_user_profile(req);
 
     this.logger.debug(
@@ -249,5 +259,79 @@ export class CredentialsService {
     return {
       message,
     } as ResponseDTO;
+  }
+
+  private async restore_from_history(
+    req: Request,
+    restore_dto: RestoreCredentialsDTO,
+  ): Promise<ResponseDTO> {
+    const user = await this.auth_service.get_user_profile(req);
+
+    this.logger.debug(
+      `Restoring credentials for user ${user.email}, host ${restore_dto.host}`,
+    );
+
+    const latest_from_history: HistoryEntity[] =
+      await this.history_service.find({
+        where: {
+          user_id: user._id,
+          host: restore_dto.host,
+          login: restore_dto.login,
+          deleted: false,
+        },
+        order: {
+          created_at: 'desc',
+        },
+        take: 1,
+      });
+
+    if (!latest_from_history.length)
+      throw new BadRequestException(
+        `No such history entity for user ${user.email}`,
+      );
+
+    const entity_from_credentials: CredentialsEntity[] =
+      await this.credentials_repository.find({
+        where: {
+          user_id: user._id,
+          host: restore_dto.host,
+          login: restore_dto.login,
+          deleted: false,
+        },
+        order: {
+          created_at: 'desc',
+        },
+        take: 1,
+      });
+
+    if (!entity_from_credentials.length)
+      throw new BadRequestException(
+        `No such credentials entity for user ${user.email}`,
+      );
+
+    Object.assign(entity_from_credentials[0], {
+      ...latest_from_history[0],
+      _id: entity_from_credentials[0]._id,
+    } as CredentialsEntity);
+
+    await this.credentials_repository.save(entity_from_credentials[0]);
+    await this.history_service.remove(latest_from_history[0]);
+
+    const message = `Credentials for host ${restore_dto.host} restored from history for user ${user.email}`;
+    this.logger.debug(message);
+
+    return {
+      message,
+    } as ResponseDTO;
+  }
+
+  async restore(
+    req: Request,
+    restore_dto: RestoreCredentialsDTO,
+  ): Promise<ResponseDTO> {
+    if (!restore_dto.from_history)
+      return this.restore_deleted(req, restore_dto);
+
+    return this.restore_from_history(req, restore_dto);
   }
 }

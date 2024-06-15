@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
@@ -10,6 +8,7 @@ import { CredentialsEntity } from './modules/credentials/entity/credentials.enti
 import { UserEntity } from './modules/user/entity/user.entity';
 import { OTPEntity } from './otp/entity/otp.entity';
 import ormConfig from '../orm.config';
+import { HistoryEntity } from './modules/history/entity/history.entity';
 
 @Module({
   imports: [
@@ -20,11 +19,9 @@ import ormConfig from '../orm.config';
     AuthModule,
     CredentialsModule,
     TypeOrmModule.forRoot({
-      entities: [CredentialsEntity, UserEntity, OTPEntity],
+      entities: [CredentialsEntity, HistoryEntity, UserEntity, OTPEntity],
       ...ormConfig,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
