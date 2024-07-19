@@ -35,7 +35,7 @@ jobs:
         run: |
           docker build . --tag ghcr.io/${{ github.repository }}:${{ github.sha }}
           docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
-  
+  #
   # azure-deploy:
   #   environment: azure
   #   runs-on: ubuntu-latest
@@ -67,7 +67,7 @@ jobs:
     environment: gcp
     runs-on: ubuntu-latest
     permissions:
-      id-token: read
+      id-token: write
       contents: read
     needs: build
 
@@ -85,6 +85,3 @@ jobs:
           service: 'backend'
           region: 'europe-southwest1'
           image: ghcr.io/${{ github.repository }}:${{ github.sha }}
-
-      - name: 'Use output'
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
