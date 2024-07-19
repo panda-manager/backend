@@ -36,29 +36,55 @@ jobs:
           docker build . --tag ghcr.io/${{ github.repository }}:${{ github.sha }}
           docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
   
-  azure-deploy:
-    environment: azure
+  # azure-deploy:
+  #   environment: azure
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   needs: build
+
+  #   steps:
+  #     - name: Azure Login
+  #       uses: azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_SUBSCRIPTION_ID }}
+
+  #     - name: Deploy to Azure
+  #       uses: azure/container-apps-deploy-action@v2
+  #       with:
+  #         resourceGroup: PandaManager
+  #         containerAppName: backend
+  #         registryUrl: ghcr.io
+  #         registryUsername: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_USERNAME }}
+  #         registryPassword: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_PASSWORD }}
+  #         imageToDeploy: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  #         environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
+
+  gcp-deploy:
+    environment: gcp
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
+      id-token: read
       contents: read
     needs: build
 
     steps:
-      - name: Azure Login
-        uses: azure/login@v2
+      - name: GCP Login
+        uses: 'google-github-actions/auth@v2'
         with:
-          client-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_SUBSCRIPTION_ID }}
+          workload_identity_provider: 'projects/820452924236/locations/global/workloadIdentityPools/github-action/providers/GitHub'
+          service_account: 'github-action@panda-manager-429621.iam.gserviceaccount.com'
 
-      - name: Deploy to Azure
-        uses: azure/container-apps-deploy-action@v2
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
         with:
-          resourceGroup: PandaManager
-          containerAppName: backend
-          registryUrl: ghcr.io
-          registryUsername: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_PASSWORD }}
-          imageToDeploy: ghcr.io/${{ github.repository }}:${{ github.sha }}
-          environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
+          service: 'backend'
+          region: 'europe-southwest1'
+          image: ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
