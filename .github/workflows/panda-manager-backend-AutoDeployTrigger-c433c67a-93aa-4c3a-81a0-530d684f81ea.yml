@@ -87,6 +87,7 @@ jobs:
         with:
           workload_identity_provider: 'projects/820452924236/locations/global/workloadIdentityPools/github-action/providers/GitHub'
           service_account: 'github-action@panda-manager-429621.iam.gserviceaccount.com'
+          token_format: 'access_token'
 
       - name: Deploy to Cloud Run
         id: deploy
