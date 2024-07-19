@@ -37,6 +37,7 @@ jobs:
           docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
   
   azure-deploy:
+    environment: azure
     runs-on: ubuntu-latest
     permissions:
       id-token: write
