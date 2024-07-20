@@ -8,6 +8,13 @@ on:
   # Allow manual trigger 
   workflow_dispatch:
 
+env:
+  PROJECT_ID: panda-manager-429621
+  GAR_LOCATION: europe-southwest1
+  REPOSITORY: panda-manager-backend
+  SERVICE: backend
+  REGION: europe-southwest1
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,67 +26,76 @@ jobs:
       - name: Checkout to the branch
         uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Build and push image
-        run: |
-          docker build . --tag ${{ secrets.DOCKERHUB_USERNAME }}/panda-manager-backend:${{ github.sha }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/panda-manager-backend:${{ github.sha }}
-  
-  azure-deploy:
-    environment: azure
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    needs: build
-
-    steps:
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy to Azure
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          resourceGroup: PandaManager
-          containerAppName: backend
-          registryUsername: ${{ secrets.DOCKERHUB_USERNAME }}
-          registryPassword: ${{ secrets.DOCKERHUB_PASSWORD }}
-          imageToDeploy: ${{ secrets.DOCKERHUB_USERNAME }}/panda-manager-backend:${{ github.sha }}
-          environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
-
-  gcp-deploy:
-    environment: gcp
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    needs: build
-
-    steps:
-      - name: Checkout to the branch
-        uses: actions/checkout@v4
-          
       - name: GCP Login
+        id: auth
         uses: 'google-github-actions/auth@v2'
         with:
+          token_format: access_token
           workload_identity_provider: 'projects/820452924236/locations/global/workloadIdentityPools/github-action/providers/github'
           service_account: 'github-action@panda-manager-429621.iam.gserviceaccount.com'
 
-      - name: Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v2
+      - name: Login to GCR
+        uses: docker/login-action@v3
         with:
-          service: 'backend'
-          region: 'europe-southwest1'
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/panda-manager-backend:${{ github.sha }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          registry: gcr.io
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Build and push image
+        run: |
+          docker build . --tag ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+          docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+  
+  # azure-deploy:
+  #   environment: azure
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   needs: build
+
+  #   steps:
+  #     - name: Azure Login
+  #       uses: azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_SUBSCRIPTION_ID }}
+
+  #     - name: Deploy to Azure
+  #       uses: azure/container-apps-deploy-action@v2
+  #       with:
+  #         resourceGroup: PandaManager
+  #         containerAppName: backend
+  #         registryUsername: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         registryPassword: ${{ secrets.DOCKERHUB_PASSWORD }}
+  #         imageToDeploy: ${{ secrets.DOCKERHUB_USERNAME }}/panda-manager-backend:${{ github.sha }}
+  #         environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
+
+  # gcp-deploy:
+  #   environment: gcp
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   needs: build
+
+  #   steps:
+  #     - name: Checkout to the branch
+  #       uses: actions/checkout@v4
+          
+  #     - name: GCP Login
+  #       uses: 'google-github-actions/auth@v2'
+  #       with:
+  #         workload_identity_provider: 'projects/820452924236/locations/global/workloadIdentityPools/github-action/providers/github'
+  #         service_account: 'github-action@panda-manager-429621.iam.gserviceaccount.com'
+
+  #     - name: Deploy to Cloud Run
+  #       id: deploy
+  #       uses: google-github-actions/deploy-cloudrun@v2
+  #       with:
+  #         service: 'backend'
+  #         region: 'europe-southwest1'
+  #         image: ${{ secrets.DOCKERHUB_USERNAME }}/panda-manager-backend:${{ github.sha }}
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
