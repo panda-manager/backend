@@ -105,7 +105,7 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: backend
-          region: europe-southwest1
+          region: ${{ env.GAR_LOCATION }}
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
           env_vars: |-
             APP_URL=${{ vars.APP_URL }}
