@@ -80,7 +80,7 @@ jobs:
           registryUsername: oauth2accesstoken
           registryPassword: ${{ steps.auth.outputs.access_token }}
           imageToDeploy: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
-          environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
+          environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=secretref:access-token-secret OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=secretref:otp-mail-user OTP_MAIL_PASSWORD=secretref:otp-mail-password OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
 
   gcp-deploy:
     environment: gcp
@@ -113,9 +113,11 @@ jobs:
             MONGO_HOST=${{ vars.MONGO_HOST }}
             MONGO_DB=${{ vars.MONGO_DB }}
             MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority
-            ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}
             OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }}
-            OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }}
-            OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }}
             OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }}
             NODE_ENV=production
+
+          secrets: |-
+            ACCESS_TOKEN_SECRET=access-token-secret:latest
+            OTP_MAIL_USER=otp-mail-user:latest
+            OTP_MAIL_PASSWORD=otp-mail-password:latest
