@@ -1,30 +1,69 @@
 name: Trigger auto deployment for panda-manager-backend
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
     branches:
       [ main ]
-    paths:
-      - '**'
-      - '.github/workflows/panda-manager-backend-AutoDeployTrigger-c433c67a-93aa-4c3a-81a0-530d684f81ea.yml'
-
+      
   # Allow manual trigger 
   workflow_dispatch:
 
+env:
+  SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+  WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+  PROJECT_ID: panda-manager-429621
+  GAR_LOCATION: europe-southwest1
+  REPOSITORY: panda-manager
+  SERVICE: backend
+
 jobs:
-  build-and-deploy:
-    environment: azure
+  build:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v4
 
+      - name: GCP Login
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Login to GCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GAR_LOCATION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Build and push image
+        run: |
+          docker build . --tag ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+          docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+  
+  azure-deploy:
+    environment: azure
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    needs: build
+
+    steps:
+      - name: GCP Login
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+          
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -32,16 +71,51 @@ jobs:
           tenant-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.PANDAMANAGERBACKEND_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
+      - name: Deploy to Azure
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}
-          registryUrl: ghcr.io
-          registryUsername: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.PANDAMANAGERBACKEND_REGISTRY_PASSWORD }}
-          containerAppName: backend
           resourceGroup: PandaManager
-          imageToBuild: ghcr.io/panda-manager/backend:${{ github.sha }}
+          containerAppName: backend
+          registryUrl: ${{ env.GAR_LOCATION }}-docker.pkg.dev
+          registryUsername: oauth2accesstoken
+          registryPassword: ${{ steps.auth.outputs.access_token }}
+          imageToDeploy: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
           environmentVariables: "APP_URL=${{ vars.APP_URL }} APP_PORT=${{ vars.APP_PORT }} MONGO_HOST=${{ vars.MONGO_HOST }} MONGO_DB=${{ vars.MONGO_DB }} MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }} OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }} OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }} OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }} NODE_ENV=production"
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
+
+  gcp-deploy:
+    environment: gcp
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    needs: build
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v4
+          
+      - name: GCP Login
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: 'backend'
+          region: 'europe-southwest1'
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+          env_vars: |-
+            APP_URL=${{ vars.APP_URL }}
+            APP_PORT=${{ vars.APP_PORT }}
+            MONGO_HOST=${{ vars.MONGO_HOST }}
+            MONGO_DB=${{ vars.MONGO_DB }}
+            MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority
+            ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}
+            OTP_MAIL_HOST=${{ vars.OTP_MAIL_HOST }}
+            OTP_MAIL_USER=${{ secrets.OTP_MAIL_USER }}
+            OTP_MAIL_PASSWORD=${{ secrets.OTP_MAIL_PASSWORD }}
+            OTP_MAIL_PORT=${{ vars.OTP_MAIL_PORT }}
+            NODE_ENV=production
