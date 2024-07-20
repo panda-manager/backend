@@ -9,13 +9,12 @@ on:
   workflow_dispatch:
 
 env:
-  SERVICE_ACCOUNT: github-action@panda-manager-429621.iam.gserviceaccount.com
-  WORKLOAD_IDENTITY_PROVIDER: projects/820452924236/locations/global/workloadIdentityPools/github-action/providers/github
+  SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+  WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
   PROJECT_ID: panda-manager-429621
   GAR_LOCATION: europe-southwest1
   REPOSITORY: panda-manager
   SERVICE: backend
-  REGION: europe-southwest1
 
 jobs:
   build:
