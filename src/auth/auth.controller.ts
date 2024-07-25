@@ -56,6 +56,7 @@ export class AuthController {
     });
   }
 
+  // TODO: Delete
   @ApiOkResponse({
     description: 'User master password validation',
     type: ResponseDTO,
