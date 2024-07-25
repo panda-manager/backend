@@ -1,4 +1,9 @@
-import { BadRequestException, ImATeapotException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ImATeapotException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from '../modules/user/user.service';

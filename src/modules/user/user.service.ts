@@ -1,4 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +13,7 @@ import { CreateUserDTO } from './dto/create_user.dto';
 import { UserStatus } from './enum/user_status';
 import { ResponseDTO } from '../../common';
 import { getDeviceIdentifier } from './device_identifier';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class UserService {
@@ -14,6 +21,8 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private user_repository: Repository<UserEntity>,
+    @Inject(forwardRef(() => AuthService))
+    private readonly auth_service: AuthService,
   ) {}
 
   findOneBy(where: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
@@ -80,6 +89,20 @@ export class UserService {
 
     return {
       message: `New device added for user ${user.email}, identifier: ${identifier}`,
+    };
+  }
+
+  async validate_master_password(
+    req: Request,
+    master_password: string,
+  ): Promise<ResponseDTO> {
+    const user = await this.auth_service.get_user_profile(req);
+
+    if (user.master_password !== master_password)
+      throw new ForbiddenException('Password is incorrect');
+
+    return {
+      message: 'Validation succeeded!',
     };
   }
 }

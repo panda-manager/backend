@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -9,7 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../modules/user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { UserService } from '../modules/user/user.service';
-import { request, Request } from 'express';
+import { Request } from 'express';
 import { UserStatus } from '../modules/user/enum/user_status';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
 import { OTPService } from '../otp/otp.service';
@@ -22,6 +24,7 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly jwt_service: JwtService,
+    @Inject(forwardRef(() => UserService))
     private readonly user_service: UserService,
     private readonly otp_service: OTPService,
   ) {}
@@ -89,7 +92,7 @@ export class AuthService {
 
     await this.user_service.insert(req, register_dto);
 
-    // TODO: Delete this
+    // TODO: Delete
     const inserted_user = await this.user_service.findOneBy({
       email: register_dto.email,
     });
