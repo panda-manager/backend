@@ -15,7 +15,7 @@ expandDotenv(env);
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly user_service: UserService,
-    private readonly config_service: ConfigService,
+    readonly config_service: ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
