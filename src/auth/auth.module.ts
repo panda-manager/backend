@@ -5,13 +5,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../modules/user/user.module';
-import { OTPModule } from '../otp/otp.module';
 import auth_token_config from './config/auth_token.config';
 import { ACCESS_TOKEN_SECRET } from '../environments';
 
 @Module({
   imports: [
-    OTPModule,
     forwardRef(() => UserModule),
     PassportModule.register({ defaultStrategy: 'jwt', session: true }),
     JwtModule.register({

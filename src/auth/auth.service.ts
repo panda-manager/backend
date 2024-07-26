@@ -14,7 +14,6 @@ import { UserService } from '../modules/user/user.service';
 import { Request } from 'express';
 import { UserStatus } from '../modules/user/enum/user_status';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
-import { OTPService } from '../otp/otp.service';
 import { ResponseDTO } from '../common';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 import { getDeviceIdentifier } from '../modules/user/device_identifier';
@@ -26,7 +25,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
-    private readonly otpService: OTPService,
   ) {}
   async login(req: Request, user: BasicAuthLoginDTO): Promise<UserEntity> {
     this.logger.log(`Login attempted for user ${user.email}`);

@@ -12,6 +12,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -22,6 +23,7 @@ import { UserService } from './user.service';
 import { UserEntity } from './entity/user.entity';
 import { JwtGuard } from '../../auth/jwt.guard';
 import { AddDeviceDTO } from './dto/add_device.dto';
+import { VerifyDeviceDTO } from './dto/verify_device';
 
 @ApiTags('User')
 @Controller('user')
@@ -77,6 +79,23 @@ export class UserController {
     await this.userService.addDevice(found, addDeviceDTO.device);
     return {
       message: `Device ${addDeviceDTO.device} was added to user's ${addDeviceDTO.email} devices with PENDING_VERIFICATION status`,
+    };
+  }
+
+  @ApiOkResponse({
+    description: 'Device verified for user',
+    type: ResponseDTO,
+  })
+  @HttpCode(HttpStatus.OK)
+  @Put('/device/verify')
+  async setDeviceVerified(@Body() verifyDeviceDTO: VerifyDeviceDTO) {
+    const found: UserEntity = await this.userService.findOneBy({
+      email: verifyDeviceDTO.email,
+    });
+
+    await this.userService.setDeviceVerified(found, verifyDeviceDTO.device);
+    return {
+      message: `Device ${verifyDeviceDTO.device} is now verified for user ${verifyDeviceDTO.email}`,
     };
   }
 }
