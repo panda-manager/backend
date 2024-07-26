@@ -20,7 +20,7 @@ import { JwtGuard } from '../../auth/jwt.guard';
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(private readonly user_service: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @ApiOkResponse({
     description: 'User master password validation',
@@ -30,13 +30,13 @@ export class UserController {
   @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   @Post('/validate/master')
-  async validate_master_password(
+  async validateMasterPassword(
     @Req() req: Request,
-    @Body() validate_master_dto: ValidateMasterDTO,
+    @Body() validateMasterDTO: ValidateMasterDTO,
   ): Promise<ResponseDTO> {
-    return this.user_service.validate_master_password(
+    return this.userService.validateMasterPassword(
       req,
-      validate_master_dto.master_password,
+      validateMasterDTO.master_password,
     );
   }
 
@@ -47,7 +47,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Get('/find')
   async find(@Query('email') email: string): Promise<ResponseDTO> {
-    const found: UserEntity = await this.user_service.findOneBy({
+    const found: UserEntity = await this.userService.findOneBy({
       email,
     });
 

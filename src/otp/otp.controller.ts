@@ -19,7 +19,7 @@ import { ResponseDTO } from '../common';
 @ApiTags('OTP')
 @Controller('otp')
 export class OTPController {
-  constructor(private readonly otp_service: OTPService) {}
+  constructor(private readonly otpService: OTPService) {}
 
   @ApiOkResponse({
     status: HttpStatus.OK,
@@ -38,13 +38,13 @@ export class OTPController {
     type: String,
     required: true,
   })
-  async verify_otp(
+  async verifyOTP(
     @Query('email') email: string,
     @Query('otp') otp: string,
   ): Promise<string> {
-    const otp_verify_dto: OTPVerifyDTO = { email, otp };
-    const response_dto: ResponseDTO =
-      await this.otp_service.verify_otp(otp_verify_dto);
+    const otpVerifyDTO: OTPVerifyDTO = { email, otp };
+    const responseDTO: ResponseDTO =
+      await this.otpService.verifyOTP(otpVerifyDTO);
 
     return `
       <!DOCTYPE html>
@@ -53,7 +53,7 @@ export class OTPController {
         <title>Sample HTML Page</title>
       </head>
       <body>
-        <h2>${response_dto.message}</h2>
+        <h2>${responseDTO.message}</h2>
       </body>
       </html>
     `;
@@ -65,10 +65,10 @@ export class OTPController {
   })
   @HttpCode(HttpStatus.OK)
   @Post()
-  send_otp(
+  sendOTP(
     @Req() req: Request,
-    @Body() otp_send_dto: OTPSendDTO,
+    @Body() otpSendDTO: OTPSendDTO,
   ): Promise<ResponseDTO> {
-    return this.otp_service.send_otp(req, otp_send_dto.email);
+    return this.otpService.sendOTP(req, otpSendDTO.email);
   }
 }

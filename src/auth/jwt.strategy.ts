@@ -14,20 +14,20 @@ expandDotenv(env);
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly user_service: UserService,
-    readonly config_service: ConfigService,
+    private readonly userService: UserService,
+    readonly configService: ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config_service.get('ACCESS_TOKEN_SECRET'),
+      secretOrKey: configService.get('ACCESS_TOKEN_SECRET'),
     });
   }
   async validate(
     payload: JwtPayload & { device: string },
   ): Promise<UserEntity> {
     const { exp, sub } = payload;
-    const found = await this.user_service.findOneBy({ email: sub });
+    const found = await this.userService.findOneBy({ email: sub });
 
     if (!found || (exp && exp < Date.now() / 1000))
       throw new UnauthorizedException();

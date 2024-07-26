@@ -34,7 +34,7 @@ import { JwtGuard } from '../../auth/jwt.guard';
 @UseGuards(JwtGuard)
 @Controller('credentials')
 export class CredentialsController {
-  constructor(private readonly credentials_service: CredentialsService) {}
+  constructor(private readonly credentialsService: CredentialsService) {}
 
   @ApiCreatedResponse({
     status: HttpStatus.CREATED,
@@ -44,9 +44,9 @@ export class CredentialsController {
   @Post()
   insert(
     @Req() req: Request,
-    @Body() create_dto: CreateCredentialsDTO,
+    @Body() createCredentialsDTO: CreateCredentialsDTO,
   ): Promise<ResponseDTO> {
-    return this.credentials_service.insert(req, create_dto);
+    return this.credentialsService.insert(req, createCredentialsDTO);
   }
 
   @ApiCreatedResponse({
@@ -57,9 +57,9 @@ export class CredentialsController {
   @Put()
   update(
     @Req() req: Request,
-    @Body() update_dto: UpdateCredentialsDTO,
+    @Body() updateCredentialsDTO: UpdateCredentialsDTO,
   ): Promise<ResponseDTO> {
-    return this.credentials_service.update(req, update_dto);
+    return this.credentialsService.update(req, updateCredentialsDTO);
   }
 
   @ApiOkResponse({
@@ -68,11 +68,11 @@ export class CredentialsController {
   })
   @HttpCode(HttpStatus.OK)
   @Post('password')
-  get_password(
+  getPassword(
     @Req() req: Request,
-    @Body() get_password_dto: GetPasswordDTO,
+    @Body() getPasswordDTO: GetPasswordDTO,
   ): Promise<string> {
-    return this.credentials_service.get_password(req, get_password_dto);
+    return this.credentialsService.getPassword(req, getPasswordDTO);
   }
 
   @ApiOkResponse({
@@ -86,11 +86,11 @@ export class CredentialsController {
   })
   @HttpCode(HttpStatus.OK)
   @Get()
-  get_all(
+  getAll(
     @Req() req: Request,
     @Query('host') host?: string,
   ): Promise<CredentialsEntity[]> {
-    return this.credentials_service.get_app_displayed_credentials(req, host);
+    return this.credentialsService.getAppDisplayedCredentials(req, host);
   }
 
   @ApiOkResponse({
@@ -101,9 +101,9 @@ export class CredentialsController {
   @Delete()
   remove(
     @Req() req: Request,
-    @Body() delete_dto: DeleteCredentialsDTO,
+    @Body() deleteDTO: DeleteCredentialsDTO,
   ): Promise<ResponseDTO> {
-    return this.credentials_service.remove(req, delete_dto);
+    return this.credentialsService.remove(req, deleteDTO);
   }
 
   @ApiQuery({
@@ -117,11 +117,11 @@ export class CredentialsController {
   })
   @HttpCode(HttpStatus.OK)
   @Get('existence')
-  has_any(
+  hasAny(
     @Req() req: Request,
     @Query('host') host: string,
   ): Promise<ResponseDTO> {
-    return this.credentials_service.has_any(req, host);
+    return this.credentialsService.hasAny(req, host);
   }
 
   @ApiOkResponse({
@@ -130,7 +130,10 @@ export class CredentialsController {
   })
   @HttpCode(HttpStatus.OK)
   @Put('restore')
-  restore(@Req() req: Request, @Body() restore_dto: RestoreCredentialsDTO) {
-    return this.credentials_service.restore(req, restore_dto);
+  restore(
+    @Req() req: Request,
+    @Body() restoreCredentialsDTO: RestoreCredentialsDTO,
+  ) {
+    return this.credentialsService.restore(req, restoreCredentialsDTO);
   }
 }
