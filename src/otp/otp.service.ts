@@ -23,13 +23,13 @@ export class OTPService {
   private readonly logger = new Logger(OTPService.name);
   constructor(
     @InjectRepository(OTPEntity)
-    private otp_repository: Repository<OTPEntity>,
-    private readonly user_service: UserService,
-    private readonly config_service: ConfigService,
+    private repository: Repository<OTPEntity>,
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   async verifyOTP(otpVerifyDTO: OTPVerifyDTO): Promise<ResponseDTO> {
-    const user = await this.user_service.findOneBy({
+    const user = await this.userService.findOneBy({
       email: otpVerifyDTO.email,
     });
 
@@ -38,7 +38,7 @@ export class OTPService {
         `No such user with email ${otpVerifyDTO.email}`,
       );
 
-    const foundOTP = await this.otp_repository.findOneBy({
+    const foundOTP = await this.repository.findOneBy({
       user_id: user._id,
       otp: otpVerifyDTO.otp,
     });
@@ -48,27 +48,27 @@ export class OTPService {
         `No such OTP found for user ${otpVerifyDTO.email}`,
       );
 
-    await this.user_service.setDeviceVerified(user, foundOTP.device);
+    await this.userService.setDeviceVerified(user, foundOTP.device);
     this.logger.debug(`Verified device for user ${otpVerifyDTO.email}`);
-    await this.otp_repository.remove(foundOTP);
+    await this.repository.remove(foundOTP);
 
     return {
       message: `${foundOTP.device} is now verified for user ${otpVerifyDTO.email}!`,
     };
   }
 
-  private async send_verification_email(
+  private async sendVerificationEmail(
     email: string,
     otp: string,
   ): Promise<void> {
     const transporter = nodemailer.createTransport({
-      host: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
-      port: this.config_service.get('OTP_MAIL_ACCOUNT').PORT,
+      host: this.configService.get('OTP_MAIL_ACCOUNT').HOST,
+      port: this.configService.get('OTP_MAIL_ACCOUNT').PORT,
       auth: {
-        user: this.config_service.get('OTP_MAIL_ACCOUNT').USER,
-        pass: this.config_service.get('OTP_MAIL_ACCOUNT').PASS,
+        user: this.configService.get('OTP_MAIL_ACCOUNT').USER,
+        pass: this.configService.get('OTP_MAIL_ACCOUNT').PASS,
       },
-      name: this.config_service.get('OTP_MAIL_ACCOUNT').HOST,
+      name: this.configService.get('OTP_MAIL_ACCOUNT').HOST,
       tls: {
         ciphers: 'SSLv3',
         rejectUnauthorized: false,
@@ -78,14 +78,14 @@ export class OTPService {
     await mailSender(
       transporter,
       email,
-      this.config_service.get('OTP_MAIL_ACCOUNT').USER,
+      this.configService.get('OTP_MAIL_ACCOUNT').USER,
       'Verification Email',
       `<html lang="en">
             <body>
             <h1>Please confirm your OTP</h1>
                    <p>Here is your OTP code: ${otp}</p>
                    <p>Please visit this link to verify the device you requested the code from:</p>
-                   <a href=${this.config_service.get('APP_URL')}/otp/verify?otp=${otp}&email=${email}>Click here!</a>
+                   <a href=${this.configService.get('APP_URL')}/otp/verify?otp=${otp}&email=${email}>Click here!</a>
             </body>
             </html>`,
     );
@@ -96,7 +96,7 @@ export class OTPService {
   async sendOTP(req: Request, email: string): Promise<ResponseDTO> {
     const device = getDeviceIdentifier(req);
 
-    const user = await this.user_service.findOneBy({
+    const user = await this.userService.findOneBy({
       email,
     });
 
@@ -111,24 +111,24 @@ export class OTPService {
       );
 
     let otp = generateOtp(6);
-    let result = await this.otp_repository.findOneBy({ otp });
+    let result = await this.repository.findOneBy({ otp });
 
     while (result) {
       otp = generateOtp(6);
-      result = await this.otp_repository.findOneBy({ otp });
+      result = await this.repository.findOneBy({ otp });
     }
 
-    const otp_payload = {
+    const otpPayload: Partial<OTPEntity> = {
       user_id: user._id,
       otp,
       device,
     };
 
-    await this.otp_repository.save(otp_payload);
-    await this.user_service.addDevice(user, device);
-    await this.send_verification_email(email, otp);
+    await this.repository.save(otpPayload);
+    await this.userService.addDevice(user, device);
+    await this.sendVerificationEmail(email, otp);
 
-    const message = `OTP generated for user ${user.email}, device ${otp_payload.device}`;
+    const message = `OTP generated for user ${user.email}, device ${otpPayload.device}`;
     this.logger.log(message);
 
     return { message };
