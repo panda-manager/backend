@@ -23,88 +23,85 @@ import { getDeviceIdentifier } from '../modules/user/device_identifier';
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   constructor(
-    private readonly jwt_service: JwtService,
+    private readonly jwtService: JwtService,
     @Inject(forwardRef(() => UserService))
-    private readonly user_service: UserService,
-    private readonly otp_service: OTPService,
+    private readonly userService: UserService,
+    private readonly otpService: OTPService,
   ) {}
   async login(req: Request, user: BasicAuthLoginDTO): Promise<UserEntity> {
     this.logger.log(`Login attempted for user ${user.email}`);
 
-    const user_record = await this.user_service.findOneBy({
+    const userEntity = await this.userService.findOneBy({
       email: user.email,
     });
 
-    if (!user_record || user.master_password !== user_record.master_password)
+    if (!userEntity || user.master_password !== userEntity.master_password)
       throw new UnauthorizedException('Username or password are incorrect!');
 
-    const request_device = user_record.devices.find(
+    const requestDevice = userEntity.devices.find(
       (item) => item.identifier === getDeviceIdentifier(req),
     );
 
-    if (!request_device)
-      await this.user_service.add_device(user_record, getDeviceIdentifier(req));
-    else if (request_device.status === UserStatus.PENDING_VERIFICATION)
-      await this.user_service.set_device_as_verified(
-        user_record,
+    if (!requestDevice)
+      await this.userService.addDevice(userEntity, getDeviceIdentifier(req));
+    else if (requestDevice.status === UserStatus.PENDING_VERIFICATION)
+      await this.userService.setDeviceVerified(
+        userEntity,
         getDeviceIdentifier(req),
       );
 
     // TODO: Re-add
     // if (
-    //   !request_device ||
-    //   request_device.status === UserStatus.PENDING_VERIFICATION
+    //   !requestDevice ||
+    //   requestDevice.status === UserStatus.PENDING_VERIFICATION
     // )
     // throw new ForbiddenException(
     //   'Requested device is not a trusted device. ' +
     //     'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
     // );
 
-    return user_record;
+    return userEntity;
   }
 
-  async generate_jwt(
+  async generateJWT(
     req: Request,
     user: UserEntity,
   ): Promise<AccessTokenResponseDTO> {
     if (!user) throw new UnauthorizedException();
 
-    const access_token = this.jwt_service.sign({
+    const accessToken = this.jwtService.sign({
       sub: user.email,
       device: getDeviceIdentifier(req),
     });
 
-    return { access_token };
+    return { access_token: accessToken };
   }
 
   async register(
     req: Request,
-    register_dto: CreateUserDTO,
+    createUserDTO: CreateUserDTO,
   ): Promise<ResponseDTO> {
-    const is_email_taken = await this.user_service.findOneBy({
-      email: register_dto.email,
+    const isEmailTaken = await this.userService.findOneBy({
+      email: createUserDTO.email,
     });
 
-    if (is_email_taken)
+    if (isEmailTaken)
       throw new BadRequestException(
         'The email address provided is already taken!',
       );
 
-    await this.user_service.insert(req, register_dto);
+    await this.userService.insert(req, createUserDTO);
 
     // TODO: Delete
-    const inserted_user = await this.user_service.findOneBy({
-      email: register_dto.email,
+    const newUser = await this.userService.findOneBy({
+      email: createUserDTO.email,
     });
 
-    await this.user_service.set_device_as_verified(
-      inserted_user,
-      getDeviceIdentifier(req),
-    );
+    await this.userService.setDeviceVerified(newUser, getDeviceIdentifier(req));
 
     // TODO: Re-add
-    // await this.otp_service.send_otp(req, register_dto.email);
-    // this.logger.log(`Account ${register_dto.email} created, OTP sent.`);
+    // await this.otpService.send_otp(req, createUserDTO.email);
+    // this.logger.log(`Account ${createUserDTO.email} created, OTP sent.`);
 
     return {
       message: 'Account created successfully!',
@@ -112,25 +109,25 @@ export class AuthService {
     };
   }
 
-  async get_user_profile(req: Request): Promise<UserEntity> {
+  async getUserProfile(req: Request): Promise<UserEntity> {
     if (req.user instanceof UserEntity) return req.user;
 
     const jwt = req.headers.authorization.split(' ')[1];
-    const payload = this.jwt_service.decode(jwt);
-    const found = await this.user_service.findOneBy({ email: payload.sub });
+    const payload = this.jwtService.decode(jwt);
+    const found = await this.userService.findOneBy({ email: payload.sub });
 
     if (!found) throw new UnauthorizedException();
 
     return found;
   }
 
-  async validate_master_password(
+  async validateMasterPassword(
     req: Request,
-    master_password: string,
+    masterPassword: string,
   ): Promise<ResponseDTO> {
-    const user = await this.get_user_profile(req);
+    const user = await this.getUserProfile(req);
 
-    if (user.master_password !== master_password)
+    if (user.master_password !== masterPassword)
       throw new ForbiddenException('Password is incorrect');
 
     return {

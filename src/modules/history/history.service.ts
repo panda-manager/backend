@@ -9,7 +9,7 @@ export class HistoryService {
 
   constructor(
     @InjectRepository(HistoryEntity)
-    private history_repository: Repository<HistoryEntity>,
+    private repository: Repository<HistoryEntity>,
   ) {}
 
   async insert(entity: HistoryEntity): Promise<void> {
@@ -17,7 +17,7 @@ export class HistoryService {
       `Saving previous credentials for user ${entity.user_id}, host ${entity.host}, login ${entity.login}`,
     );
 
-    await this.history_repository.save(entity);
+    await this.repository.save(entity);
 
     this.logger.log(
       `Previous credentials for user ${entity.user_id}, host ${entity.host}, login ${entity.login} saved successfully.`,
@@ -25,10 +25,10 @@ export class HistoryService {
   }
 
   find(options: FindManyOptions<HistoryEntity>): Promise<HistoryEntity[]> {
-    return this.history_repository.find(options);
+    return this.repository.find(options);
   }
 
   remove(entity: HistoryEntity): Promise<HistoryEntity> {
-    return this.history_repository.remove(entity);
+    return this.repository.remove(entity);
   }
 }

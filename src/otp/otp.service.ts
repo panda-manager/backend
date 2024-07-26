@@ -28,32 +28,32 @@ export class OTPService {
     private readonly config_service: ConfigService,
   ) {}
 
-  async verify_otp(otp_verify_dto: OTPVerifyDTO): Promise<ResponseDTO> {
+  async verifyOTP(otpVerifyDTO: OTPVerifyDTO): Promise<ResponseDTO> {
     const user = await this.user_service.findOneBy({
-      email: otp_verify_dto.email,
+      email: otpVerifyDTO.email,
     });
 
     if (!user)
       throw new BadRequestException(
-        `No such user with email ${otp_verify_dto.email}`,
+        `No such user with email ${otpVerifyDTO.email}`,
       );
 
-    const found_otp = await this.otp_repository.findOneBy({
+    const foundOTP = await this.otp_repository.findOneBy({
       user_id: user._id,
-      otp: otp_verify_dto.otp,
+      otp: otpVerifyDTO.otp,
     });
 
-    if (!found_otp)
+    if (!foundOTP)
       throw new BadRequestException(
-        `No such OTP found for user ${otp_verify_dto.email}`,
+        `No such OTP found for user ${otpVerifyDTO.email}`,
       );
 
-    await this.user_service.set_device_as_verified(user, found_otp.device);
-    this.logger.debug(`Verified device for user ${otp_verify_dto.email}`);
-    await this.otp_repository.remove(found_otp);
+    await this.user_service.setDeviceVerified(user, foundOTP.device);
+    this.logger.debug(`Verified device for user ${otpVerifyDTO.email}`);
+    await this.otp_repository.remove(foundOTP);
 
     return {
-      message: `${found_otp.device} is now verified for user ${otp_verify_dto.email}!`,
+      message: `${foundOTP.device} is now verified for user ${otpVerifyDTO.email}!`,
     };
   }
 
@@ -93,7 +93,7 @@ export class OTPService {
     this.logger.debug(`OTP mail sent successfully to ${email}`);
   }
 
-  async send_otp(req: Request, email: string): Promise<ResponseDTO> {
+  async sendOTP(req: Request, email: string): Promise<ResponseDTO> {
     const device = getDeviceIdentifier(req);
 
     const user = await this.user_service.findOneBy({
@@ -125,7 +125,7 @@ export class OTPService {
     };
 
     await this.otp_repository.save(otp_payload);
-    await this.user_service.add_device(user, device);
+    await this.user_service.addDevice(user, device);
     await this.send_verification_email(email, otp);
 
     const message = `OTP generated for user ${user.email}, device ${otp_payload.device}`;

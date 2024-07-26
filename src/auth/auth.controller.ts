@@ -23,7 +23,7 @@ import { JwtGuard } from './jwt.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly auth_service: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
   @ApiOkResponse({
     description: 'Access token for future requests',
     type: AccessTokenResponseDTO,
@@ -32,13 +32,10 @@ export class AuthController {
   @Post('login')
   async login(
     @Req() req: Request,
-    @Body() login_dto: BasicAuthLoginDTO,
+    @Body() loginDTO: BasicAuthLoginDTO,
   ): Promise<AccessTokenResponseDTO> {
-    const user = await this.auth_service.login(req, {
-      ...login_dto,
-    });
-
-    return this.auth_service.generate_jwt(req, user);
+    const user = await this.authService.login(req, loginDTO);
+    return this.authService.generateJWT(req, user);
   }
 
   @ApiCreatedResponse({
@@ -49,11 +46,9 @@ export class AuthController {
   @Post('register')
   async register(
     @Req() req: Request,
-    @Body() register_dto: CreateUserDTO,
+    @Body() registerDTO: CreateUserDTO,
   ): Promise<ResponseDTO> {
-    return await this.auth_service.register(req, {
-      ...register_dto,
-    });
+    return await this.authService.register(req, registerDTO);
   }
 
   // TODO: Delete
@@ -65,13 +60,13 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   @Post('/validate/master')
-  async validate_master_password(
+  async validateMasterPassword(
     @Req() req: Request,
-    @Body() validate_master_dto: ValidateMasterDTO,
+    @Body() validateMasterDTO: ValidateMasterDTO,
   ): Promise<ResponseDTO> {
-    return this.auth_service.validate_master_password(
+    return this.authService.validateMasterPassword(
       req,
-      validate_master_dto.master_password,
+      validateMasterDTO.master_password,
     );
   }
 }
