@@ -11,11 +11,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ValidateMasterDTO } from '../../auth/dto/validate_master.dto';
 import { UserService } from './user.service';
 import { UserEntity } from './entity/user.entity';
+import { JwtGuard } from '../../auth/jwt.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -27,7 +27,7 @@ export class UserController {
     type: ResponseDTO,
   })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   @Post('/validate/master')
   async validate_master_password(

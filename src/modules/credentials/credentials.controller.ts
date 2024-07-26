@@ -19,7 +19,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CredentialsService } from './credentials.service';
-import { AuthGuard } from '@nestjs/passport';
 import { CreateCredentialsDTO } from './dto/create_credentials.dto';
 import { Request } from 'express';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
@@ -28,10 +27,11 @@ import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
 import { CredentialsEntity } from './entity/credentials.entity';
 import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
+import { JwtGuard } from '../../auth/jwt.guard';
 
 @ApiBearerAuth()
 @ApiTags('Credentials')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtGuard)
 @Controller('credentials')
 export class CredentialsController {
   constructor(private readonly credentials_service: CredentialsService) {}

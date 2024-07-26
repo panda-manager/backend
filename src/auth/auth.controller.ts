@@ -18,8 +18,8 @@ import {
 } from '@nestjs/swagger';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 import { ResponseDTO } from '../common';
-import { AuthGuard } from '@nestjs/passport';
 import { ValidateMasterDTO } from './dto/validate_master.dto';
+import { JwtGuard } from './jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -62,7 +62,7 @@ export class AuthController {
     type: ResponseDTO,
   })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   @Post('/validate/master')
   async validate_master_password(
