@@ -1,8 +1,12 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SetupSwagger } from './config';
 import * as morgan from 'morgan';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import nestConfig from '../nest.config';
 import helmet from 'helmet';
 import { APP_PORT } from './environments';
@@ -14,6 +18,7 @@ const bootstrap = async () => {
   app.use(morgan('dev'));
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   await app.listen(APP_PORT);
 };
