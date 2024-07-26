@@ -1,4 +1,9 @@
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ResponseDTO } from '../../common';
 import {
   Body,
@@ -16,6 +21,7 @@ import { ValidateMasterDTO } from '../../auth/dto/validate_master.dto';
 import { UserService } from './user.service';
 import { UserEntity } from './entity/user.entity';
 import { JwtGuard } from '../../auth/jwt.guard';
+import { AddDeviceDTO } from './dto/add_device.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -54,6 +60,23 @@ export class UserController {
     return {
       message: !found ? 'No such user' : 'User found',
       data: found,
+    };
+  }
+
+  @ApiCreatedResponse({
+    description: 'Device created for user',
+    type: ResponseDTO,
+  })
+  @HttpCode(HttpStatus.CREATED)
+  @Post('/device')
+  async addDevice(@Body() addDeviceDTO: AddDeviceDTO): Promise<ResponseDTO> {
+    const found: UserEntity = await this.userService.findOneBy({
+      email: addDeviceDTO.email,
+    });
+
+    await this.userService.addDevice(found, addDeviceDTO.device);
+    return {
+      message: `Device ${addDeviceDTO.device} was added to user's ${addDeviceDTO.email} devices with PENDING_VERIFICATION status`,
     };
   }
 }
