@@ -40,23 +40,14 @@ export class AuthService {
       (item) => item.identifier === getDeviceIdentifier(req),
     );
 
-    if (!requestDevice)
-      await this.userService.addDevice(userEntity, getDeviceIdentifier(req));
-    else if (requestDevice.status === UserStatus.PENDING_VERIFICATION)
-      await this.userService.setDeviceVerified(
-        userEntity,
-        getDeviceIdentifier(req),
+    if (
+      !requestDevice ||
+      requestDevice.status === UserStatus.PENDING_VERIFICATION
+    )
+      throw new ForbiddenException(
+        'Requested device is not a trusted device. ' +
+          'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
       );
-
-    // TODO: Re-add
-    // if (
-    //   !requestDevice ||
-    //   requestDevice.status === UserStatus.PENDING_VERIFICATION
-    // )
-    // throw new ForbiddenException(
-    //   'Requested device is not a trusted device. ' +
-    //     'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
-    // );
 
     return userEntity;
   }
@@ -89,21 +80,10 @@ export class AuthService {
       );
 
     await this.userService.insert(req, createUserDTO);
-
-    // TODO: Delete
-    const newUser = await this.userService.findOneBy({
-      email: createUserDTO.email,
-    });
-
-    await this.userService.setDeviceVerified(newUser, getDeviceIdentifier(req));
-
-    // TODO: Re-add
-    // await this.otpService.send_otp(req, createUserDTO.email);
-    // this.logger.log(`Account ${createUserDTO.email} created, OTP sent.`);
+    this.logger.log(`Account ${createUserDTO.email} created, OTP sent.`);
 
     return {
       message: 'Account created successfully!',
-      // 'Account created. An OTP was sent to the provided email address.',
     };
   }
 

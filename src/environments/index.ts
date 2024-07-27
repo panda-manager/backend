@@ -33,21 +33,11 @@ export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const MONGO_URL = process.env.MONGO_URL;
 //#endregion
 
-//#region OTP
-export const OTP_MAIL_ACCOUNT = {
-  HOST: process.env.OTP_MAIL_HOST,
-  PORT: process.env.OTP_MAIL_PORT,
-  USER: process.env.OTP_MAIL_USER,
-  PASS: process.env.OTP_MAIL_PASSWORD,
-};
-//#endregion
-
 export default () => ({
   NODE_ENV,
   APP_PORT,
   APP_URL,
   MONGO_URL,
   ACCESS_TOKEN_SECRET,
-  OTP_MAIL_ACCOUNT,
   CORS_HANDLER,
 });

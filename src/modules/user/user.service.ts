@@ -81,9 +81,7 @@ export class UserService {
         ...user.devices,
         {
           identifier,
-          status: UserStatus.VERIFIED,
-          // TODO: Re-add
-          // status: UserStatus.PENDING_VERIFICATION,
+          status: UserStatus.PENDING_VERIFICATION,
         },
       ],
     });
