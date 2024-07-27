@@ -16,7 +16,6 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 import { ResponseDTO } from '../../common';
 import { ValidateMasterDTO } from '../user/dto/validate_master.dto';
 import { JwtGuard } from './jwt.guard';
@@ -26,14 +25,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @ApiOkResponse({
     description: 'Access token for future requests',
-    type: AccessTokenResponseDTO,
+    type: ResponseDTO,
   })
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
     @Req() req: Request,
     @Body() loginDTO: BasicAuthLoginDTO,
-  ): Promise<AccessTokenResponseDTO> {
+  ): Promise<ResponseDTO> {
     const user = await this.authService.login(req, loginDTO);
     return this.authService.generateJWT(req, user);
   }

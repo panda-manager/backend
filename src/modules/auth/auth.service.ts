@@ -15,7 +15,6 @@ import { Request } from 'express';
 import { UserStatus } from '../user/enum/user_status';
 import { CreateUserDTO } from '../user/dto/create_user.dto';
 import { getDeviceIdentifier, ResponseDTO } from '../../common';
-import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 
 @Injectable()
 export class AuthService {
@@ -51,10 +50,7 @@ export class AuthService {
     return userEntity;
   }
 
-  async generateJWT(
-    req: Request,
-    user: UserEntity,
-  ): Promise<AccessTokenResponseDTO> {
+  async generateJWT(req: Request, user: UserEntity): Promise<ResponseDTO> {
     if (!user) throw new UnauthorizedException();
 
     const accessToken = this.jwtService.sign({
@@ -62,7 +58,7 @@ export class AuthService {
       device: getDeviceIdentifier(req),
     });
 
-    return { access_token: accessToken };
+    return { data: { access_token: accessToken } };
   }
 
   async register(
