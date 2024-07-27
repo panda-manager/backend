@@ -21,7 +21,7 @@ import { Request } from 'express';
 import { ValidateMasterDTO } from './dto/validate_master.dto';
 import { UserService } from './user.service';
 import { UserEntity } from './entity/user.entity';
-import { JwtGuard } from '../../auth/jwt.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 import { AddDeviceDTO } from './dto/add_device.dto';
 import { VerifyDeviceDTO } from './dto/verify_device';
 

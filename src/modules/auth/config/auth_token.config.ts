@@ -1,4 +1,4 @@
-import { NODE_ENV } from '../../environments';
+import { NODE_ENV } from '../../../environments';
 
 const authTokenConfig = {
   development: {},

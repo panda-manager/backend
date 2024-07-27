@@ -4,9 +4,9 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
-import { UserModule } from '../modules/user/user.module';
+import { UserModule } from '../user/user.module';
 import auth_token_config from './config/auth_token.config';
-import { ACCESS_TOKEN_SECRET } from '../environments';
+import { ACCESS_TOKEN_SECRET } from '../../environments';
 
 @Module({
   imports: [

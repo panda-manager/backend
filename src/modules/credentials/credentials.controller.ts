@@ -27,7 +27,7 @@ import { GetPasswordDTO } from './dto/get_password.dto';
 import { ResponseDTO } from '../../common';
 import { CredentialsEntity } from './entity/credentials.entity';
 import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
-import { JwtGuard } from '../../auth/jwt.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @ApiBearerAuth()
 @ApiTags('Credentials')

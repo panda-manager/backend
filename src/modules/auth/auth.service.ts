@@ -8,13 +8,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from '../modules/user/entity/user.entity';
+import { UserEntity } from '../user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
-import { UserService } from '../modules/user/user.service';
+import { UserService } from '../user/user.service';
 import { Request } from 'express';
-import { UserStatus } from '../modules/user/enum/user_status';
-import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
-import { getDeviceIdentifier, ResponseDTO } from '../common';
+import { UserStatus } from '../user/enum/user_status';
+import { CreateUserDTO } from '../user/dto/create_user.dto';
+import { getDeviceIdentifier, ResponseDTO } from '../../common';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 
 @Injectable()

@@ -12,7 +12,7 @@ import { UserEntity } from './entity/user.entity';
 import { CreateUserDTO } from './dto/create_user.dto';
 import { UserStatus } from './enum/user_status';
 import { getDeviceIdentifier, ResponseDTO } from '../../common';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
