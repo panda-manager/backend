@@ -39,8 +39,6 @@ export class CredentialsEntity {
   created_at: Date;
 
   constructor(partial: Partial<CredentialsEntity>) {
-    if (partial) {
-      Object.assign(this, partial);
-    }
+    if (partial) Object.assign(this, partial);
   }
 }

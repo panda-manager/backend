@@ -44,8 +44,6 @@ export class UserEntity {
   created_at: Date;
 
   constructor(partial: Partial<UserEntity>) {
-    if (partial) {
-      Object.assign(this, partial);
-    }
+    if (partial) Object.assign(this, partial);
   }
 }
