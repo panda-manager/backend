@@ -110,9 +110,7 @@ jobs:
           env_vars: |-
             APP_URL=${{ vars.APP_URL }}
             APP_PORT=${{ vars.APP_PORT }}
-            MONGO_HOST=${{ vars.MONGO_HOST }}
-            MONGO_DB=${{ vars.MONGO_DB }}
-            MONGO_URL=mongodb+srv://${{ vars.MONGO_HOST }}/${{ vars.MONGO_DB }}?authMechanism=MONGODB-X509&authSource=$external&appName=PandaManagerGCP&retryWrites=true&w=majority
             NODE_ENV=production
           secrets: |-
             ACCESS_TOKEN_SECRET=access-token-secret:latest
+            MONGO_URL=mongo-url:latest
