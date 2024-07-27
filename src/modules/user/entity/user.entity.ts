@@ -37,7 +37,6 @@ export class UserEntity {
     type: 'array',
     default: [],
   })
-  @Exclude({ toPlainOnly: true })
   devices: DeviceDTO[];
 
   @ApiProperty({ type: Date, description: 'User creation UTC epoch' })
