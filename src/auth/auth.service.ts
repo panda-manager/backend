@@ -14,9 +14,8 @@ import { UserService } from '../modules/user/user.service';
 import { Request } from 'express';
 import { UserStatus } from '../modules/user/enum/user_status';
 import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
-import { ResponseDTO } from '../common';
+import { getDeviceIdentifier, ResponseDTO } from '../common';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
-import { getDeviceIdentifier } from '../modules/user/device_identifier';
 
 @Injectable()
 export class AuthService {
