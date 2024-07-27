@@ -6,8 +6,13 @@ const retainLastOctet = (ip: string): string => {
   if (!ip) return '';
 
   const segments: string[] = ip.split('.');
-  segments.pop();
-  return segments.join('.') + '.0';
+
+  if (segments.length > 1) {
+    segments.pop();
+    return segments.join('.') + '.0';
+  }
+
+  return ip;
 };
 
 export const getDeviceIdentifier = (req: Request): string => {
