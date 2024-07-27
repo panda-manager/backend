@@ -18,8 +18,8 @@ const retainLastOctet = (ip: string): string => {
 export const getDeviceIdentifier = (req: Request): string => {
   const { headers, ips, ip } = req;
 
-  if (headers['X-Forwarded-For'])
-    return retainLastOctet(headers['X-Forwarded-For'].toString().split(',')[0]);
+  if (headers['x-forwarded-for'])
+    return retainLastOctet(headers['x-forwarded-for'].toString().split(',')[0]);
 
   return retainLastOctet(ips[0] ?? ip);
 };
