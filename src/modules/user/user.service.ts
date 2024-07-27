@@ -11,8 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { CreateUserDTO } from './dto/create_user.dto';
 import { UserStatus } from './enum/user_status';
-import { ResponseDTO } from '../../common';
-import { getDeviceIdentifier } from './device_identifier';
+import { getDeviceIdentifier, ResponseDTO } from '../../common';
 import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
