@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserStatus } from '../enum/user_status';
+import { DeviceStatus } from '../enum/device_status';
 import { Column } from 'typeorm';
 
 export class DeviceDTO {
@@ -9,8 +9,8 @@ export class DeviceDTO {
   @ApiProperty({ type: Number, description: 'Pending verification/verified' })
   @Column({
     type: 'enum',
-    enum: UserStatus,
-    default: UserStatus.PENDING_VERIFICATION,
+    enum: DeviceStatus,
+    default: DeviceStatus.PENDING_VERIFICATION,
   })
-  readonly status: UserStatus;
+  readonly status: DeviceStatus;
 }

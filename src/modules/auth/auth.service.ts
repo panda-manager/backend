@@ -12,7 +12,6 @@ import { UserEntity } from '../user/entity/user.entity';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { UserService } from '../user/user.service';
 import { Request } from 'express';
-import { UserStatus } from '../user/enum/user_status';
 import { CreateUserDTO } from '../user/dto/create_user.dto';
 import { getDeviceIdentifier, ResponseDTO } from '../../common';
 
@@ -34,18 +33,19 @@ export class AuthService {
     if (!userEntity || user.master_password !== userEntity.master_password)
       throw new UnauthorizedException('Username or password are incorrect!');
 
-    const requestDevice = userEntity.devices.find(
-      (item) => item.identifier === getDeviceIdentifier(req),
-    );
+    // TODO: Re-add device check
+    // const requestDevice = userEntity.devices.find(
+    //   (item) => item.identifier === getDeviceIdentifier(req),
+    // );
 
-    if (
-      !requestDevice ||
-      requestDevice.status === UserStatus.PENDING_VERIFICATION
-    )
-      throw new ForbiddenException(
-        'Requested device is not a trusted device. ' +
-          'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
-      );
+    // if (
+    //   !requestDevice ||
+    //   requestDevice.status === DeviceStatus.PENDING_VERIFICATION
+    // )
+    //   throw new ForbiddenException(
+    //     'Requested device is not a trusted device. ' +
+    //       'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
+    //   );
 
     return userEntity;
   }

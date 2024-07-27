@@ -10,7 +10,7 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { CreateUserDTO } from './dto/create_user.dto';
-import { UserStatus } from './enum/user_status';
+import { DeviceStatus } from './enum/device_status';
 import { getDeviceIdentifier, ResponseDTO } from '../../common';
 import { AuthService } from '../auth/auth.service';
 
@@ -37,7 +37,7 @@ export class UserService {
       devices: [
         {
           identifier: getDeviceIdentifier(req),
-          status: UserStatus.PENDING_VERIFICATION,
+          status: DeviceStatus.VERIFIED,
         },
       ],
     });
@@ -53,7 +53,7 @@ export class UserService {
     device: string,
   ): Promise<ResponseDTO> {
     Object.assign(user, {
-      status: UserStatus.VERIFIED,
+      status: DeviceStatus.VERIFIED,
     });
 
     const deviceToUpdate = user.devices.find(
@@ -62,7 +62,7 @@ export class UserService {
 
     if (deviceToUpdate) {
       Object.assign(deviceToUpdate, {
-        status: UserStatus.VERIFIED,
+        status: DeviceStatus.VERIFIED,
       });
     }
 
@@ -80,7 +80,7 @@ export class UserService {
         ...user.devices,
         {
           identifier,
-          status: UserStatus.PENDING_VERIFICATION,
+          status: DeviceStatus.PENDING_VERIFICATION,
         },
       ],
     });

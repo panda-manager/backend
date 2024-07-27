@@ -26,6 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(
     payload: JwtPayload & { device: string },
   ): Promise<UserEntity> {
+    // TODO: Add device check
     const { exp, sub } = payload;
     const found = await this.userService.findOneBy({ email: sub });
 
