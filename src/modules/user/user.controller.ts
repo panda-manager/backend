@@ -18,7 +18,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { ValidateMasterDTO } from '../../auth/dto/validate_master.dto';
+import { ValidateMasterDTO } from './dto/validate_master.dto';
 import { UserService } from './user.service';
 import { UserEntity } from './entity/user.entity';
 import { JwtGuard } from '../../auth/jwt.guard';

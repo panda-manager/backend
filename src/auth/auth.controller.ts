@@ -18,7 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
 import { ResponseDTO } from '../common';
-import { ValidateMasterDTO } from './dto/validate_master.dto';
+import { ValidateMasterDTO } from '../modules/user/dto/validate_master.dto';
 import { JwtGuard } from './jwt.guard';
 
 @Controller('auth')
