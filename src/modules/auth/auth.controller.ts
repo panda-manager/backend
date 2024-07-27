@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
-import { CreateUserDTO } from '../modules/user/dto/create_user.dto';
+import { CreateUserDTO } from '../user/dto/create_user.dto';
 import { Request } from 'express';
 import {
   ApiBearerAuth,
@@ -17,8 +17,8 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { AccessTokenResponseDTO } from './dto/access_token_response.dto';
-import { ResponseDTO } from '../common';
-import { ValidateMasterDTO } from '../modules/user/dto/validate_master.dto';
+import { ResponseDTO } from '../../common';
+import { ValidateMasterDTO } from '../user/dto/validate_master.dto';
 import { JwtGuard } from './jwt.guard';
 
 @Controller('auth')

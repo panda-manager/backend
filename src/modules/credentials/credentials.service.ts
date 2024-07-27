@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { CredentialsEntity } from './entity/credentials.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { UpdateCredentialsDTO } from './dto/update_credentials.dto';
 import { DeleteCredentialsDTO } from './dto/delete_credentials.dto';
 import { GetPasswordDTO } from './dto/get_password.dto';
