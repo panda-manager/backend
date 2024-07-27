@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import environments from './environments';
@@ -8,6 +7,7 @@ import { CredentialsEntity } from './modules/credentials/entity/credentials.enti
 import { UserEntity } from './modules/user/entity/user.entity';
 import ormConfig from '../orm.config';
 import { HistoryEntity } from './modules/history/entity/history.entity';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { HistoryEntity } from './modules/history/entity/history.entity';
       isGlobal: true,
       load: [environments],
     }),
-    AuthModule,
+    UserModule,
     CredentialsModule,
     TypeOrmModule.forRoot({
       entities: [CredentialsEntity, HistoryEntity, UserEntity],
