@@ -31,10 +31,6 @@ export class CredentialsEntity {
   password: string;
 
   @Exclude({ toPlainOnly: true })
-  @Column({ type: Boolean, default: false })
-  deleted: boolean;
-
-  @Exclude({ toPlainOnly: true })
   @CreateDateColumn()
   created_at: Date;
 
