@@ -229,19 +229,13 @@ export class CredentialsService {
       `Restoring credentials for user ${user.email}, host ${restoreCredentialsDTO.host}`,
     );
 
-    const latestFromHistory: HistoryEntity[] = await this.historyService.find({
-      where: {
-        user_id: user._id,
-        host: restoreCredentialsDTO.host,
-        login: restoreCredentialsDTO.login,
-      },
-      order: {
-        created_at: 'desc',
-      },
-      take: 1,
+    const latestFromHistory = await this.historyService.latest({
+      user_id: user._id,
+      host: restoreCredentialsDTO.host,
+      login: restoreCredentialsDTO.login,
     });
 
-    if (!latestFromHistory.length)
+    if (!latestFromHistory)
       throw new BadRequestException(
         `No such history entity for user ${user.email}`,
       );
@@ -263,7 +257,7 @@ export class CredentialsService {
     }
 
     await this.repository.save({
-      ...latestFromHistory[0],
+      ...latestFromHistory,
       created_at: new Date(),
     });
 

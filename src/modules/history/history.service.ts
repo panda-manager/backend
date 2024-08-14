@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { HistoryEntity } from './entity/history.entity';
 
 @Injectable()
@@ -26,6 +26,19 @@ export class HistoryService {
 
   find(options: FindManyOptions<HistoryEntity>): Promise<HistoryEntity[]> {
     return this.repository.find(options);
+  }
+
+  async latest(where: FindOptionsWhere<HistoryEntity>) {
+    const latestDocument: HistoryEntity[] = await this.find({
+      where,
+      order: {
+        created_at: 'desc',
+      },
+      take: 1,
+    });
+
+    if (!latestDocument.length) return null;
+    return latestDocument[0];
   }
 
   remove(entity: HistoryEntity): Promise<HistoryEntity> {
