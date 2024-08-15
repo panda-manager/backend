@@ -29,7 +29,9 @@ export class AuthService {
       email: loginDTO.email,
     });
 
-    if (!user || loginDTO.master_password !== user.master_password)
+    if (!user)
+      throw new BadRequestException(`No such user with email ${user.email}`);
+    else if (loginDTO.master_password !== user.master_password)
       throw new UnauthorizedException('Username or password are incorrect!');
 
     return {
