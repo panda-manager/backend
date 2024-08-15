@@ -8,6 +8,7 @@ const orm: Record<Mode, Partial<TypeOrmModuleOptions>> = {
     type: 'mongodb',
     url: MONGO_URL,
     synchronize: true,
+    database: 'panda-manager',
   },
   production: {
     type: 'mongodb',
@@ -15,6 +16,7 @@ const orm: Record<Mode, Partial<TypeOrmModuleOptions>> = {
     ssl: true,
     sslCert: 'ssl/mongo_key_cert.pem',
     sslKey: 'ssl/mongo_key_cert.pem',
+    database: 'panda-manager',
   },
 };
 

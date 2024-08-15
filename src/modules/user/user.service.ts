@@ -37,7 +37,7 @@ export class UserService {
       devices: [
         {
           identifier: getDeviceIdentifier(req),
-          status: DeviceStatus.VERIFIED,
+          status: DeviceStatus.PENDING_VERIFICATION,
         },
       ],
     });

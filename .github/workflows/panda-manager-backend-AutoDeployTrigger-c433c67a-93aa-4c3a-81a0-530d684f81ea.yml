@@ -3,7 +3,7 @@ name: Trigger auto deployment for panda-manager-backend
 on:
   push:
     branches:
-      [ main ]
+      [ main, feature/otp ]
       
   # Allow manual trigger 
   workflow_dispatch:
