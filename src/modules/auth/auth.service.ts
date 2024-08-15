@@ -30,8 +30,10 @@ export class AuthService {
       email: user.email,
     });
 
-    if (!userEntity || user.master_password !== userEntity.master_password)
-      throw new UnauthorizedException('Username or password are incorrect!');
+    if (!userEntity)
+      throw new BadRequestException(`No such user with email ${user.email}`);
+    else if (user.master_password !== userEntity.master_password)
+      throw new BadRequestException('Username or password are incorrect');
 
     // TODO: Re-add device check
     // const requestDevice = userEntity.devices.find(
