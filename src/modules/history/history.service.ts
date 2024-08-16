@@ -40,8 +40,4 @@ export class HistoryService {
     if (!latestDocument.length) return null;
     return latestDocument[0];
   }
-
-  remove(entity: HistoryEntity): Promise<HistoryEntity> {
-    return this.repository.remove(entity);
-  }
 }
