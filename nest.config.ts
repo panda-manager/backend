@@ -1,6 +1,8 @@
+import { Mode } from 'common';
 import { CORS_HANDLER, NODE_ENV } from './src/environments';
+import { NestApplicationOptions } from '@nestjs/common';
 
-const options = {
+const options: Record<Mode, Partial<NestApplicationOptions>> = {
   development: {
     cors: CORS_HANDLER,
   },

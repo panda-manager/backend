@@ -1,7 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SetupSwagger } from './config';
-import * as morgan from 'morgan';
 import {
   ClassSerializerInterceptor,
   Logger,
@@ -15,7 +14,6 @@ const bootstrap = async () => {
   const app = await NestFactory.create(AppModule, nestConfig);
 
   SetupSwagger(app);
-  app.use(morgan('dev'));
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));

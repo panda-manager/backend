@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -13,7 +12,7 @@ import { BasicAuthLoginDTO } from './dto/basic_auth_login.dto';
 import { UserService } from '../user/user.service';
 import { Request } from 'express';
 import { CreateUserDTO } from '../user/dto/create_user.dto';
-import { getDeviceIdentifier, ResponseDTO } from '../../common';
+import { ResponseDTO } from '../../common';
 
 @Injectable()
 export class AuthService {
@@ -23,42 +22,21 @@ export class AuthService {
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
-  async login(req: Request, user: BasicAuthLoginDTO): Promise<UserEntity> {
-    this.logger.log(`Login attempted for user ${user.email}`);
+  async login(loginDTO: BasicAuthLoginDTO): Promise<ResponseDTO> {
+    this.logger.log(`Login attempted for user ${loginDTO.email}`);
 
-    const userEntity = await this.userService.findOneBy({
-      email: user.email,
+    const user = await this.userService.findOneBy({
+      email: loginDTO.email,
     });
 
-    if (!userEntity || user.master_password !== userEntity.master_password)
+    if (!user)
+      throw new BadRequestException(`No such user with email ${user.email}`);
+    else if (loginDTO.master_password !== user.master_password)
       throw new UnauthorizedException('Username or password are incorrect!');
 
-    // TODO: Re-add device check
-    // const requestDevice = userEntity.devices.find(
-    //   (item) => item.identifier === getDeviceIdentifier(req),
-    // );
-
-    // if (
-    //   !requestDevice ||
-    //   requestDevice.status === DeviceStatus.PENDING_VERIFICATION
-    // )
-    //   throw new ForbiddenException(
-    //     'Requested device is not a trusted device. ' +
-    //       'POST Request to /otp from this device to get an OTP with your email and verify it from the link in the mail',
-    //   );
-
-    return userEntity;
-  }
-
-  async generateJWT(req: Request, user: UserEntity): Promise<ResponseDTO> {
-    if (!user) throw new UnauthorizedException();
-
-    const accessToken = this.jwtService.sign({
-      sub: user.email,
-      device: getDeviceIdentifier(req),
-    });
-
-    return { data: { access_token: accessToken } };
+    return {
+      data: user,
+    };
   }
 
   async register(
@@ -75,7 +53,7 @@ export class AuthService {
       );
 
     await this.userService.insert(req, createUserDTO);
-    this.logger.log(`Account ${createUserDTO.email} created, OTP sent.`);
+    this.logger.log(`Account ${createUserDTO.email} created`);
 
     return {
       message: 'Account created successfully!',
@@ -92,19 +70,5 @@ export class AuthService {
     if (!found) throw new UnauthorizedException();
 
     return found;
-  }
-
-  async validateMasterPassword(
-    req: Request,
-    masterPassword: string,
-  ): Promise<ResponseDTO> {
-    const user = await this.getUserProfile(req);
-
-    if (user.master_password !== masterPassword)
-      throw new ForbiddenException('Password is incorrect');
-
-    return {
-      message: 'Validation succeeded!',
-    };
   }
 }
