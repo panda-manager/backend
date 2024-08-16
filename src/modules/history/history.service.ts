@@ -24,6 +24,10 @@ export class HistoryService {
     );
   }
 
+  findOneBy(where: FindOptionsWhere<HistoryEntity>): Promise<HistoryEntity> {
+    return this.repository.findOneBy(where);
+  }
+
   find(options: FindManyOptions<HistoryEntity>): Promise<HistoryEntity[]> {
     return this.repository.find(options);
   }

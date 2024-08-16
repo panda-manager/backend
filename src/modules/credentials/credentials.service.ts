@@ -12,6 +12,7 @@ import { ResponseDTO } from '../../common';
 import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
 import { HistoryService } from '../history/history.service';
 import { HistoryEntity } from '../history/entity/history.entity';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class CredentialsService {
@@ -229,13 +230,21 @@ export class CredentialsService {
       `Restoring credentials for user ${user.email}, host ${restoreCredentialsDTO.host}`,
     );
 
-    const latestFromHistory = await this.historyService.latest({
-      user_id: user._id,
-      host: restoreCredentialsDTO.host,
-      login: restoreCredentialsDTO.login,
-    });
+    let documentFromHistory: HistoryEntity;
 
-    if (!latestFromHistory)
+    if (restoreCredentialsDTO.id_from_history) {
+      documentFromHistory = await this.historyService.findOneBy({
+        _id: new ObjectId(restoreCredentialsDTO.id_from_history),
+      });
+    } else {
+      documentFromHistory = await this.historyService.latest({
+        user_id: user._id,
+        host: restoreCredentialsDTO.host,
+        login: restoreCredentialsDTO.login,
+      });
+    }
+
+    if (!documentFromHistory)
       throw new BadRequestException(
         `No such history entity for user ${user.email}`,
       );
@@ -257,7 +266,7 @@ export class CredentialsService {
     }
 
     await this.repository.save({
-      ...latestFromHistory,
+      ...documentFromHistory,
       created_at: new Date(),
     });
 

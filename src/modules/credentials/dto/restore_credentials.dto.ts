@@ -10,6 +10,6 @@ export class RestoreCredentialsDTO {
   @IsNotEmpty()
   readonly login: string;
 
-  @ApiProperty({ type: Boolean })
-  readonly from_history?: boolean;
+  @ApiProperty({ type: String })
+  readonly id_from_history?: string;
 }
