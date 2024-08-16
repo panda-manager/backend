@@ -12,6 +12,7 @@ import { ResponseDTO } from '../../common';
 import { RestoreCredentialsDTO } from './dto/restore_credentials.dto';
 import { HistoryService } from '../history/history.service';
 import { HistoryEntity } from '../history/entity/history.entity';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class CredentialsService {
@@ -39,7 +40,6 @@ export class CredentialsService {
         user_id: user._id,
         host: createCredentialsDTO.host,
         login: createCredentialsDTO.login,
-        deleted: false,
       });
 
     if (existing_credentials)
@@ -50,7 +50,7 @@ export class CredentialsService {
     const createdCredentials: CredentialsEntity = await this.repository.save({
       ...createCredentialsDTO,
       user_id: user._id,
-      deleted: false,
+      created_at: new Date(),
     });
 
     const message = `Credentials for host ${createCredentialsDTO.host} created successfully for user ${user.email}.`;
@@ -81,7 +81,6 @@ export class CredentialsService {
       user_id: user._id,
       host: updateCredentialsDTO.host,
       login: updateCredentialsDTO.login,
-      deleted: false,
     });
 
     if (!existingCredentials)
@@ -93,18 +92,22 @@ export class CredentialsService {
       `Found matching credentials for host ${updateCredentialsDTO.host}, user ${user.email}. Attempting update...`,
     );
 
-    await this.historyService.insert(existingCredentials);
+    await this.historyService.insert({
+      ...existingCredentials,
+      created_at: new Date(),
+    });
+
     await this.repository.remove(existingCredentials);
 
     const { display_name, host, login } = await this.repository.save({
       user_id: existingCredentials.user_id,
       host: existingCredentials.host,
       password: updateCredentialsDTO.new_password,
-      deleted: false,
       login: updateCredentialsDTO.new_login ?? existingCredentials.login,
       display_name:
         updateCredentialsDTO.new_display_name ??
         existingCredentials.display_name,
+      created_at: new Date(),
     } as CredentialsEntity);
 
     const message = `Credentials for host ${updateCredentialsDTO.host} updated successfully for user ${user.email}.`;
@@ -129,9 +132,7 @@ export class CredentialsService {
     this.logger.debug(`Attempting to pull all user ${user.email} passwords.`);
 
     const found: CredentialsEntity[] = await this.repository.find({
-      where: host
-        ? { user_id: user._id, host: host, deleted: false }
-        : { user_id: user._id, deleted: false },
+      where: host ? { user_id: user._id, host: host } : { user_id: user._id },
     });
 
     this.logger.log(
@@ -155,7 +156,6 @@ export class CredentialsService {
       user_id: user._id,
       host: getPasswordDTO.host,
       login: getPasswordDTO.login,
-      deleted: false,
     });
 
     if (!found)
@@ -184,7 +184,6 @@ export class CredentialsService {
         user_id: user._id,
         host: deleteCredentialsDTO.host,
         login: deleteCredentialsDTO.login,
-        deleted: false,
       });
 
     if (!existingCredentials)
@@ -192,15 +191,14 @@ export class CredentialsService {
         `No such credentials for user ${user.email}`,
       );
 
-    if (deleteCredentialsDTO.deletion_type === 'hard')
-      await this.repository.remove(existingCredentials);
-    else {
-      Object.assign(existingCredentials, {
-        deleted: true,
+    if (deleteCredentialsDTO.deletion_type !== 'hard') {
+      await this.historyService.insert({
+        ...existingCredentials,
+        created_at: new Date(),
       });
-
-      await this.repository.save(existingCredentials);
     }
+
+    await this.repository.remove(existingCredentials);
 
     const message = `Credentials for host ${deleteCredentialsDTO.host} deleted for user ${user.email}`;
     this.logger.debug(message);
@@ -222,43 +220,6 @@ export class CredentialsService {
     };
   }
 
-  private async restoreDeleted(
-    req: Request,
-    restoreCredentialsDTO: RestoreCredentialsDTO,
-  ): Promise<ResponseDTO> {
-    const user = await this.authService.getUserProfile(req);
-
-    this.logger.debug(
-      `Restoring credentials for user ${user.email}, host ${restoreCredentialsDTO.host}`,
-    );
-
-    const existingCredentials: CredentialsEntity =
-      await this.repository.findOneBy({
-        user_id: user._id,
-        host: restoreCredentialsDTO.host,
-        login: restoreCredentialsDTO.login,
-        deleted: true,
-      });
-
-    if (!existingCredentials)
-      throw new BadRequestException(
-        `No such deleted credentials for user ${user.email}`,
-      );
-
-    Object.assign(existingCredentials, {
-      deleted: false,
-    });
-
-    await this.repository.save(existingCredentials);
-
-    const message = `Credentials for host ${restoreCredentialsDTO.host} restored for user ${user.email}`;
-    this.logger.debug(message);
-
-    return {
-      message,
-    } as ResponseDTO;
-  }
-
   private async restoreFromHistory(
     req: Request,
     restoreCredentialsDTO: RestoreCredentialsDTO,
@@ -269,50 +230,45 @@ export class CredentialsService {
       `Restoring credentials for user ${user.email}, host ${restoreCredentialsDTO.host}`,
     );
 
-    const latestFromHistory: HistoryEntity[] = await this.historyService.find({
-      where: {
+    let documentFromHistory: HistoryEntity;
+
+    if (restoreCredentialsDTO.id_from_history) {
+      documentFromHistory = await this.historyService.findOneBy({
+        _id: new ObjectId(restoreCredentialsDTO.id_from_history),
+      });
+    } else {
+      documentFromHistory = await this.historyService.latest({
         user_id: user._id,
         host: restoreCredentialsDTO.host,
         login: restoreCredentialsDTO.login,
-        deleted: false,
-      },
-      order: {
-        created_at: 'desc',
-      },
-      take: 1,
-    });
+      });
+    }
 
-    if (!latestFromHistory.length)
+    if (!documentFromHistory)
       throw new BadRequestException(
         `No such history entity for user ${user.email}`,
       );
 
-    const entityFromCredentials: CredentialsEntity[] =
-      await this.repository.find({
-        where: {
-          user_id: user._id,
-          host: restoreCredentialsDTO.host,
-          login: restoreCredentialsDTO.login,
-          deleted: false,
-        },
-        order: {
-          created_at: 'desc',
-        },
-        take: 1,
+    const entityFromCredentials: CredentialsEntity =
+      await this.repository.findOneBy({
+        user_id: user._id,
+        host: restoreCredentialsDTO.host,
+        login: restoreCredentialsDTO.login,
       });
 
-    if (!entityFromCredentials.length)
-      throw new BadRequestException(
-        `No such credentials entity for user ${user.email}`,
-      );
+    if (entityFromCredentials) {
+      await this.historyService.insert({
+        ...entityFromCredentials,
+        created_at: new Date(),
+      });
 
-    Object.assign(entityFromCredentials[0], {
-      ...latestFromHistory[0],
-      _id: entityFromCredentials[0]._id,
-    } as CredentialsEntity);
+      await this.repository.remove(entityFromCredentials);
+    }
 
-    await this.repository.save(entityFromCredentials[0]);
-    await this.historyService.remove(latestFromHistory[0]);
+    await this.repository.save({
+      ...documentFromHistory,
+      created_at: new Date(),
+    });
 
     const message = `Credentials for host ${restoreCredentialsDTO.host} restored from history for user ${user.email}`;
     this.logger.debug(message);
@@ -326,9 +282,6 @@ export class CredentialsService {
     req: Request,
     restoreCredentialsDTO: RestoreCredentialsDTO,
   ): Promise<ResponseDTO> {
-    if (!restoreCredentialsDTO.from_history)
-      return this.restoreDeleted(req, restoreCredentialsDTO);
-
     return this.restoreFromHistory(req, restoreCredentialsDTO);
   }
 }
