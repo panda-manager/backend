@@ -11,5 +11,5 @@ export class DeleteCredentialsDTO {
   readonly login: string;
 
   @ApiProperty({ type: String, example: 'soft' })
-  readonly deletion_type?: 'soft' | 'hard';
+  readonly deletion_type?: 'soft' | 'hard' = 'soft';
 }
