@@ -1,7 +1,6 @@
+import { Mode } from 'common';
 import { MONGO_URL, NODE_ENV } from './src/environments';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-
-type Mode = 'development' | 'production';
 
 const orm: Record<Mode, Partial<TypeOrmModuleOptions>> = {
   development: {

@@ -26,3 +26,5 @@ export const getDeviceIdentifier = (req: Request): string => {
 
 export * from './responses/response.dto';
 export * from './responses/error_response.dto';
+
+export type Mode = 'development' | 'production';
