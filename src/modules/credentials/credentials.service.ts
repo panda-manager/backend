@@ -190,7 +190,7 @@ export class CredentialsService {
         `No such credentials for user ${user.email}`,
       );
 
-    if (deleteCredentialsDTO.deletion_type === 'soft') {
+    if (deleteCredentialsDTO.deletion_type !== 'hard') {
       await this.historyService.insert({
         ...existingCredentials,
         created_at: new Date(),
