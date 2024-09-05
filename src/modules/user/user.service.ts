@@ -75,20 +75,26 @@ export class UserService {
   }
 
   async addDevice(user: UserEntity, identifier: string): Promise<ResponseDTO> {
-    Object.assign(user, {
-      devices: [
-        ...user.devices,
-        {
-          identifier,
-          status: DeviceStatus.PENDING_VERIFICATION,
-        },
-      ],
-    });
+    if (!user.devices.find((item) => item.identifier == identifier)) {
+      Object.assign(user, {
+        devices: [
+          ...user.devices,
+          {
+            identifier,
+            status: DeviceStatus.PENDING_VERIFICATION,
+          },
+        ],
+      });
 
-    await this.repository.save(user);
+      await this.repository.save(user);
+
+      return {
+        message: `New device added for user ${user.email}, identifier: ${identifier}`,
+      };
+    }
 
     return {
-      message: `New device added for user ${user.email}, identifier: ${identifier}`,
+      message: `Device ${identifier} already exists for user ${user.email}`,
     };
   }
 
