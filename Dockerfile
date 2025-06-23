@@ -17,6 +17,8 @@ COPY . .
 # Build the app
 RUN npm run build
 
+##################
+
 # Stage 2: Production
 FROM node:20 AS production
 
